@@ -64,4 +64,4 @@ ssh -Y username@servername
 ```
 and your password.
 
-### Congratulations you stablished a connection between Your local VS code MAcOS and the remote server!
+#### Congratulations you stablished a connection between Your local VS code MAcOS and the remote server!
