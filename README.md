@@ -16,7 +16,7 @@ To install you need to log to a linux machine(see bellow) and in the terminal:
 
 3. Install the conda enviroment:
   ```
-  conda env create -f environment.yml
+  conda env create -f config.yml
   conda activate vector
   ```
 
