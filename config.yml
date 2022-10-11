@@ -1,16 +1,19 @@
 name: vector
 channels:
+  - conda-forge
   - defaults
 dependencies:
-  - python=3.8.5
+  - python=3.10.7
+  - conda: 
+    - root # install if needed (huge package)
   - pip
   - pip:
-    - pandas==0.25.3
-    - scikit-learn==0.23.1
-    - numpy==1.19.5
-    - uproot==4.0.6
+    - pandas==1.5.0
+    - scikit-learn==1.1.2
+    - numpy==1.23.3
+    - uproot==4.2.3
     - matplotlib==3.1.2
-    - seaborn==0.10.0
-    - statsmodels==0.12.0
-    - tqdm==4.56.0
-    - scipy==1.3.3
+    - seaborn==0.12.0
+    - statsmodels==0.13.2
+    - tqdm==4.64.1
+    - scipy==1.9.2
