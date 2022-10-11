@@ -7,22 +7,20 @@ from sklearn.inspection import permutation_importance
 import shap
 import pickle
 
-# framework includes
-import data_utils as du
-
-# another test
 
 
-class model_saving:
+class ModelSaving:
+    """
+    Class that stores a trained model in a pickle file.
+    """
 
-    def __init__(self, model):
+    def __init__(self, file_name="saved_model.pkl"):
+        self.file_name = file_name
+
+    def save_model(self, model=None):
         # input an already trained model
-        self.m_model=model
-
-    def save_model(self, file_name="model.pickle"):
-        print("Saving the model into a pickle (binary) file")
-        model_pickle = self.m_model
-        pickle.dump(model_pickle, open(file_name,'wb'))
+        print("Saving the model into a pickle(binary) file")
+        pickle.dump(model, open(file_name,'wb'))
         # pickle.dump([sv_t,average,f1_score], open('complete_ml.pkl', 'wb' ))
         # sv_t,average,f1_score = pickle.load(open('complete_ml.pkl','rb'))
 
@@ -32,7 +30,7 @@ class model_saving:
             return pickle.load(f)
 
 
-class grid_search:
+class GridSearch:
 
     def __init__(self, model):
         self.m_model = model
@@ -50,7 +48,7 @@ class grid_search:
         return acc_arr
 
         
-def fom_method(sig, bkg):
+def fom_simple(sig, bkg):
     a=np.add(sig, bkg)
     ss=1/(np.sqrt(bkg))
     b=np.add(bkg,ss*ss)
@@ -70,12 +68,40 @@ def fom_method(sig, bkg):
     return np.nanmax(fpt)
 
 
-def fom_simple_method_max(sig, bkg):
+def fom_simple_max(sig, bkg):
     k= sig/np.sqrt(np.add(sig, bkg))
     countf, binf = np.histogram(k,bins=100,range=[-2,2])
     plt.plot(binf,k,marker='o',color='red')
     plt.savefig('fom_old')
     return np.nanmax(k)
+
+
+# framework includes
+# import data_utils as du
+def roc_curve_adaboost(Y_thresholds, Y_test):
+    # function to create the TPR and FPR, for ROC curve
+    # check data format
+    if type(Y_test) != type(np.array([])):
+        Y_test = Y_test.values
+
+    TPR_list, FPR_list = [], []
+    for i in range(Y_thresholds.shape[0]):
+        tp,fn,tn,fp=0,0,0,0
+        for j in range(Y_thresholds.shape[1]):             
+            if(Y_test[j] == 1  and Y_thresholds[i][j] ==  1):  tp+=1
+            if(Y_test[j] == 1  and Y_thresholds[i][j] == -1):  fn+=1
+            if(Y_test[j] == -1 and Y_thresholds[i][j] == -1):  tn+=1
+            if(Y_test[j] == -1 and Y_thresholds[i][j] ==  1):  fp+=1
+
+        TPR_list.append( tp/(tp+fn) )
+        FPR_list.append( fp/(tn+fp) )
+
+    # sort the first list and map ordered indexes to the second list
+    FPR_list, TPR_list = zip(*sorted(zip(FPR_list, TPR_list)))
+    TPR = np.array(TPR_list)
+    FPR = np.array(FPR_list)
+
+    return TPR,FPR
 
 
 class variable_importance:
@@ -101,7 +127,7 @@ class variable_importance:
         method.fit(X_train, Y_train)
         if self.m_roc_area=="absv":
             y_thresholds = method.decision_thresholds(X_test, glob_dec=True)
-            TPR, FPR = du.roc_curve_adaboost(y_thresholds, Y_test)
+            TPR, FPR = roc_curve_adaboost(y_thresholds, Y_test)
             method.clean()
             return auc(FPR,TPR)
         elif self.m_roc_area=="prob":
