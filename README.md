@@ -22,7 +22,7 @@ To install you need to log to a linux machine(see bellow) and in the terminal:
 
 4. Try your first example:
   ```
-  python3 svm_example.py
+  python3 ./scripts/svm_example.py
   ```
 
 
