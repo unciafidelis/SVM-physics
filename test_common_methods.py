@@ -36,7 +36,7 @@ class TestModelStoring(unittest.TestCase):
         acc_og = accuracy_score(y_test, y_pred)
         prc_og = precision_score(y_test, y_pred)
         from common_methods import ModelStoring
-        test_store = ModelStoring(file_name="test_model.pkl")
+        test_store = ModelStoring(file_name="./test/test_model.pkl")
         test_store.save_model(model=model)
         model_pickled = test_store.load_model()
         y_pred = model_pickled.predict(X_test)

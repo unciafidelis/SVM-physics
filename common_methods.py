@@ -47,7 +47,7 @@ class ModelStoring:
 class VariableImportance:
     """
     Class that asses the importance of a given variable when training a model
-    Needed format, pandas data frames, main methods return an orderdered list of variables
+    Input data must be pandas data frames, main methods return an orderdered list of variables
     """
     def __init__(self, model, X_train, Y_train, X_test, Y_test, global_auc=1.0, roc_area="prob"):
         self.m_model = model
@@ -175,7 +175,7 @@ class VariableImportance:
         import matplotlib.pyplot as plt
         fig = shap.plots.heatmap(shap_values, show=False) # shap.summary_plot(shap_values, X_test.iloc[0:1000,:])
         f = plt.gcf()
-        f.savefig('heatmap.png')
+        f.savefig('./test/heatmap.png')
         plt.close(f)
 
 
@@ -214,12 +214,10 @@ class VariableImportance:
         print("hello world!")
 
 
-
 class GridSearch:
     """
     Class that searches optimal model parameters
     """
-
     def __init__(self, model):
         self.m_model = model
 
@@ -237,22 +235,22 @@ class GridSearch:
 
         
 def fom_simple(sig, bkg):
-    a=np.add(sig, bkg)
-    ss=1/(np.sqrt(bkg))
-    b=np.add(bkg,ss*ss)
-    mul=np.multiply(bkg,bkg)
-    sum= (a*b)/(np.add(mul,a*ss*ss))
-    first=a*np.log(sum)
-    c=(sig*ss*ss)/(bkg*b)
-    c1=np.add(1,c)
-    clog=np.log(c1)
-    sec=mul/(ss*ss)
-    second=sec*clog
-    final=2*(first-second)
-    fpt=np.sqrt(final)
+    a = np.add(sig, bkg)
+    ss = 1/(np.sqrt(bkg))
+    b = np.add(bkg,ss*ss)
+    mul = np.multiply(bkg,bkg)
+    sum = (a*b)/(np.add(mul,a*ss*ss))
+    first = a*np.log(sum)
+    c = (sig*ss*ss)/(bkg*b)
+    c1 = np.add(1,c)
+    clog = np.log(c1)
+    sec = mul/(ss*ss)
+    second = sec*clog
+    final = 2*(first-second)
+    fpt = np.sqrt(final)
     countf, binf = np.histogram(fpt,bins=100,range=[-2,2])
     #plt.plot(binf,fpt,marker='o',color='red')
-    #plt.savefig('fom_new')
+    #plt.savefig('fom_new.png')
     return np.nanmax(fpt)
 
 
@@ -260,12 +258,5 @@ def fom_simple_max(sig, bkg):
     k= sig/np.sqrt(np.add(sig, bkg))
     countf, binf = np.histogram(k,bins=100,range=[-2,2])
     plt.plot(binf,k,marker='o',color='red')
-    plt.savefig('fom_old')
+    plt.savefig('fom_old.png')
     return np.nanmax(k)
-
-
-# framework includes
-# import data_utils as du
-
-
-
