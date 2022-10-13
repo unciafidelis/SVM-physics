@@ -8,18 +8,12 @@ from sklearn.metrics import accuracy_score,precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn import datasets,tree
+# framework includes
+from data.data_preparation import DataPreparation
 
 
-data_iris = datasets.load_iris()
-data_set = pd.DataFrame(data=data_iris.data, columns=data_iris.feature_names)
-data_set['species'] = pd.Categorical.from_codes(data_iris.target, data_iris.target_names)
-species_mapping = {"setosa": 1, "versicolour": 1, "virginica": -1}
-data_set["species"] = data_set["species"].map(species_mapping)
-data_set["species"] = data_set["species"].fillna(+1)
-Y = data_set["species"]
-X = data_set.drop("species", axis=1)
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.6, random_state=0)
-variables = list(X_train.columns)
+data = DataPreparation(path="../data/", GA_selection=True)
+X_train, y_train, X_test, y_test = data.dataset(sample_name="titanic", sampling=False, split_sample=0.4)
 model = tree.DecisionTreeClassifier() # svm.SVC(kernel="sigmoid", gamma=1)
 
 
