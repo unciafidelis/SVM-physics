@@ -175,7 +175,7 @@ class VariableImportance:
         import matplotlib.pyplot as plt
         fig = shap.plots.heatmap(shap_values, show=False) # shap.summary_plot(shap_values, X_test.iloc[0:1000,:])
         f = plt.gcf()
-        f.savefig('./test/heatmap.png')
+        f.savefig('./files/heatmap.png')
         plt.close(f)
 
 
