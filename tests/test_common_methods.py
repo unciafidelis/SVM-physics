@@ -35,8 +35,8 @@ class TestModelStoring(unittest.TestCase):
         y_pred = model.predict(X_test)
         acc_og = accuracy_score(y_test, y_pred)
         prc_og = precision_score(y_test, y_pred)
-        from common_methods import ModelStoring
-        test_store = ModelStoring(file_name="./test/test_model.pkl")
+        from common.common_methods import ModelStoring
+        test_store = ModelStoring(file_name="./files/test_model.pkl")
         test_store.save_model(model=model)
         model_pickled = test_store.load_model()
         y_pred = model_pickled.predict(X_test)
@@ -48,14 +48,14 @@ class TestModelStoring(unittest.TestCase):
 
 
 class TestVariableImportance(unittest.TestCase):
-    """Tests classes in common_methods"""
+    """Tests classes in common.common_methods"""
     @pytest.fixture(autouse=True)
     def initdir(self, tmpdir):
         print(tmpdir)
         tmpdir.chdir() # change to pytest-provided temporary directory
     
     def test_one_variable_out(self):
-        from common_methods import VariableImportance
+        from common.common_methods import VariableImportance
         test_var_imp = VariableImportance(model=model, X_train=X_train, Y_train=y_train,
                                           X_test=X_test, Y_test=y_test, roc_area="prob")
         ordered_variables = test_var_imp.one_variable_out()
@@ -66,7 +66,7 @@ class TestVariableImportance(unittest.TestCase):
         self.assertCountEqual(ordered_list, list(X_train.columns))
 
     def test_recursive_one_variable_out(self):
-        from common_methods import VariableImportance
+        from common.common_methods import VariableImportance
         test_var_imp = VariableImportance(model=model, X_train=X_train, Y_train=y_train,
                                           X_test=X_test, Y_test=y_test, roc_area="prob")
         ordered_variables_recursive = test_var_imp.recursive_one_variable_out()
@@ -77,7 +77,7 @@ class TestVariableImportance(unittest.TestCase):
         self.assertCountEqual(ordered_list, list(X_train.columns))
 
     def test_permutation_feature(self):
-        from common_methods import VariableImportance
+        from common.common_methods import VariableImportance
         test_var_imp = VariableImportance(model=model, X_train=X_train, Y_train=y_train,
                                           X_test=X_test, Y_test=y_test, roc_area="prob")
         ordered_permutation = test_var_imp.permutation_feature()
@@ -90,7 +90,7 @@ class TestVariableImportance(unittest.TestCase):
     def test_shapley_values(self):
         import warnings
         warnings.simplefilter("ignore") # safe to ignore numpy warnings for now!
-        from common_methods import VariableImportance
+        from common.common_methods import VariableImportance
         test_var_imp = VariableImportance(model=model, X_train=X_train, Y_train=y_train,
                                           X_test=X_test, Y_test=y_test, roc_area="prob")
 
@@ -102,6 +102,7 @@ class TestVariableImportance(unittest.TestCase):
         # for first, second in ordered_permutation:
         #     ordered_list.append(first)
         # self.assertCountEqual(ordered_list, list(X_train.columns))
+
 
 if __name__ == '__main__':
     unittest.main()

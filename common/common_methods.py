@@ -76,7 +76,6 @@ class VariableImportance:
                 if(Y_test[j] == -1 and Y_thresholds[i][j] ==  1):  fp+=1
             TPR_list.append( tp/(tp+fn) )
             FPR_list.append( fp/(tn+fp) )
-
         # sort the first list and map ordered indexes to the second list
         FPR_list, TPR_list = zip(*sorted(zip(FPR_list, TPR_list)))
         TPR = np.array(TPR_list)
