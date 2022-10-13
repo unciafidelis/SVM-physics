@@ -18,6 +18,7 @@ To install you need to log to a linux machine(see bellow) and in the terminal:
   ```
   conda env create -f config.yml
   conda activate vector
+  conda develop .
   ```
 
 4. Try your first example:
