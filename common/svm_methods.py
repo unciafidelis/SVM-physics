@@ -11,10 +11,10 @@ import math
 import os
 
 
-
 class LinearPrecomputed():
     """
     Class that computes by hand the linear kernel
+    Returns a numpy array that is the dot product of the input matrices
     """
     def __init__(self, x, y=None):
         self.x = np.array(x)
