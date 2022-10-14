@@ -95,3 +95,26 @@ class PolyPrecomputed():
    
     def numpy_calc(self):
         return np.array([[self.poly_np(i, j) for j in self.y ] for i in self.x])
+
+
+class KernelSum():
+    """
+    Class that computest the linear combination of kernels
+    Input values are gram matrices (kernel matrices)
+    """
+    def __init__(self, kernels=[]):
+        if len(kernels) == 0:
+            print("No input kernels. Goodbye!")
+            return None
+        else:
+            self.kernels = kernels
+
+    def linear_combination(self):
+        sum = 0
+        for kernel in self.kernels:
+            sum += kernel[0] * kernel[1]
+        return sum
+
+
+
+

@@ -13,7 +13,7 @@ data = DataPreparation(path="../data/", GA_selection=False)
 X_train, y_train, X_test, y_test = data.dataset(sample_name="titanic", sampling=False, split_sample=0.5)
 
 
-class TestLinearPrecomputed(unittest.TestCase):
+class TestPrecomputed(unittest.TestCase):
     """Tests classes in common_methods"""
     @pytest.fixture(autouse=True)
     def initdir(self, tmpdir):
@@ -113,6 +113,20 @@ class TestLinearPrecomputed(unittest.TestCase):
         self.assertEqual(acc_og, acc_np)
         self.assertEqual(prc_og, prc_np)
 
+    def test_poly_precomputed(self):
+        from common.svm_methods import PolyPrecomputed
+        test_poly = PolyPrecomputed(X_train, gamma=0.5, deg=2, coef=1)
+        matrix_poly = test_poly.explicit_calc()
+        from common.svm_methods import RBFPrecomputed
+        test_rbf = RBFPrecomputed(X_train)
+        matrix_rbf = test_rbf.explicit_calc()
+        kernels = []
+        kernels.append((matrix_poly, 1))
+        kernels.append((matrix_rbf,  1))
+        from common.svm_methods import KernelSum
+        kernel_sum = KernelSum(kernels)
+        kernel_sum = kernel_sum.linear_combination()
+        print(kernel_sum)
 
 if __name__ == '__main__':
     unittest.main()
