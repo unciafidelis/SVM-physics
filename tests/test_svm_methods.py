@@ -113,7 +113,7 @@ class TestPrecomputed(unittest.TestCase):
         self.assertEqual(acc_og, acc_np)
         self.assertEqual(prc_og, prc_np)
 
-    def test_poly_precomputed(self):
+    def test_kernel_sum(self):
         from common.svm_methods import PolyPrecomputed
         test_poly = PolyPrecomputed(X_train, gamma=0.5, deg=2, coef=1)
         matrix_poly = test_poly.explicit_calc()

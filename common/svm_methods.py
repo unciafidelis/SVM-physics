@@ -100,6 +100,7 @@ class PolyPrecomputed():
 class KernelSum():
     """
     Class that computest the linear combination of kernels
+    result = a * A + b * B + ...
     Input values are gram matrices (kernel matrices)
     """
     def __init__(self, kernels=[]):
