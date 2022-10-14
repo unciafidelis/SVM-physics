@@ -1,14 +1,5 @@
-from sklearn.svm import SVC, LinearSVC
-from sklearn.model_selection import KFold
-from sklearn import preprocessing
-from sklearn.model_selection import train_test_split
-import ctypes
 import numpy as np
-from random import sample
-import pandas as pd
-from sklearn.metrics import accuracy_score
-import math
-import os
+from sklearn.svm import SVC, LinearSVC
 
 
 class LinearPrecomputed():
