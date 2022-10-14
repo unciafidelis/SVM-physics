@@ -115,18 +115,33 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_kernel_sum(self):
         from common.svm_methods import PolyPrecomputed
-        test_poly = PolyPrecomputed(X_train, gamma=0.5, deg=2, coef=1)
+        test_poly = PolyPrecomputed(X_train, gamma=1, deg=1, coef=0)
+        matrix_test = PolyPrecomputed(X_test, X_train, gamma=1, deg=1, coef=0)
         matrix_poly = test_poly.explicit_calc()
-        from common.svm_methods import RBFPrecomputed
-        test_rbf = RBFPrecomputed(X_train)
-        matrix_rbf = test_rbf.explicit_calc()
+        matrix_test = matrix_test.explicit_calc()
         kernels = []
-        kernels.append((matrix_poly, 1))
-        kernels.append((matrix_rbf,  1))
+        kernels.append((1, matrix_poly))
+        kernels.append((1, matrix_poly))
+        kernels_test = []
+        kernels_test.append((1, matrix_test))
+        kernels_test.append((1, matrix_test))
         from common.svm_methods import KernelSum
         kernel_sum = KernelSum(kernels)
         kernel_sum = kernel_sum.linear_combination()
-        print(kernel_sum)
+        kernel_sum_test = KernelSum(kernels_test)
+        kernel_sum_test = kernel_sum_test.linear_combination()
+        model_np = SVC(kernel="precomputed")
+        model_np.fit(kernel_sum, y_train)
+        y_pred_np = model_np.predict(kernel_sum_test)
+        acc_np = accuracy_score(y_test, y_pred_np)
+        prc_np = precision_score(y_test, y_pred_np)
+        model_og = SVC(kernel="poly", degree=1, gamma=2, coef0=0)
+        model_og.fit(X_train, y_train)
+        y_pred_og = model_og.predict(X_test)
+        acc_og = accuracy_score(y_test, y_pred_og)
+        prc_og = precision_score(y_test, y_pred_og)
+        self.assertEqual(acc_og, acc_np)
+        self.assertEqual(prc_og, prc_np)
 
 if __name__ == '__main__':
     unittest.main()
