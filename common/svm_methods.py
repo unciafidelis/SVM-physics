@@ -16,9 +16,12 @@ class LinearPrecomputed():
     """
     Class that computes by hand the linear kernel
     """
-    def __init__(self, x_input):
-        self.x = np.array(x_input)
-        self.y = np.array(x_input)
+    def __init__(self, x, y=None):
+        self.x = np.array(x)
+        if y is None:
+            self.y = np.array(x)
+        else:
+            self.y = np.array(y)
 
     @staticmethod
     def linear_explicit(v1, v2):
