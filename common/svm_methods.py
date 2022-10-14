@@ -5,7 +5,7 @@ from sklearn.svm import SVC, LinearSVC
 
 class LinearPrecomputed():
     """
-    Class that computes by hand the linear kernel
+    Class that computes by hand a linear kernel
     Returns a numpy array that is the dot product of the input matrices
     """
     def __init__(self, x, y=None):
@@ -35,7 +35,7 @@ class LinearPrecomputed():
 
 class RBFPrecomputed():
     """
-    Class that computes by hand the RBF kernel
+    Class that computes by hand a RBF kernel
     Returns a numpy array that is the gaussian transform of the input matrices
     """
     def __init__(self, x, y=None, gamma=0.01):
@@ -65,7 +65,7 @@ class RBFPrecomputed():
 
 class PolyPrecomputed():
     """
-    Class that computes by hand the polynomial kernel
+    Class that computes by hand a polynomial kernel
     Returns a numpy array that is the gaussian transform of the input matrices
     """
     def __init__(self, x, y=None, gamma=1, deg=1, coef=0):
