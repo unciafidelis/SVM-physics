@@ -142,6 +142,3 @@ class TestPrecomputed(unittest.TestCase):
         prc_og = precision_score(y_test, y_pred_og)
         self.assertEqual(acc_og, acc_np)
         self.assertEqual(prc_og, prc_np)
-
-if __name__ == '__main__':
-    unittest.main()

@@ -44,6 +44,29 @@ class ModelStoring:
             print("The file does not exist")
 
 
+def roc_curve_adaboost(Y_thresholds, Y_test) -> tuple:
+    """
+    Tailored function to create the TPR and FPR, for ROC curve
+    """    
+    if type(Y_test) != type(np.array([])): # check data format
+        Y_test = Y_test.values
+    TPR_list, FPR_list = [], []
+    for i in range(Y_thresholds.shape[0]):
+        tp,fn,tn,fp=0,0,0,0
+        for j in range(Y_thresholds.shape[1]):             
+            if(Y_test[j] == 1  and Y_thresholds[i][j] ==  1):  tp+=1
+            if(Y_test[j] == 1  and Y_thresholds[i][j] == -1):  fn+=1
+            if(Y_test[j] == -1 and Y_thresholds[i][j] == -1):  tn+=1
+            if(Y_test[j] == -1 and Y_thresholds[i][j] ==  1):  fp+=1
+        TPR_list.append( tp/(tp+fn) )
+        FPR_list.append( fp/(tn+fp) )
+        # sort the first list and map ordered indexes to the second list
+    FPR_list, TPR_list = zip(*sorted(zip(FPR_list, TPR_list)))
+    TPR = np.array(TPR_list)
+    FPR = np.array(FPR_list)
+    return (TPR, FPR)
+
+
 class VariableImportance:
     """
     Class that asses the importance of a given variable when training a model
@@ -57,30 +80,6 @@ class VariableImportance:
         self.m_y_test = Y_test
         self.m_global_auc = global_auc
         self.m_roc_area = roc_area
-
-    @staticmethod
-    def roc_curve_adaboost(Y_thresholds, Y_test):
-        """
-        Tailored function to create the TPR and FPR, for ROC curve
-        """    
-        if type(Y_test) != type(np.array([])): # check data format
-            Y_test = Y_test.values
-
-        TPR_list, FPR_list = [], []
-        for i in range(Y_thresholds.shape[0]):
-            tp,fn,tn,fp=0,0,0,0
-            for j in range(Y_thresholds.shape[1]):             
-                if(Y_test[j] == 1  and Y_thresholds[i][j] ==  1):  tp+=1
-                if(Y_test[j] == 1  and Y_thresholds[i][j] == -1):  fn+=1
-                if(Y_test[j] == -1 and Y_thresholds[i][j] == -1):  tn+=1
-                if(Y_test[j] == -1 and Y_thresholds[i][j] ==  1):  fp+=1
-            TPR_list.append( tp/(tp+fn) )
-            FPR_list.append( fp/(tn+fp) )
-        # sort the first list and map ordered indexes to the second list
-        FPR_list, TPR_list = zip(*sorted(zip(FPR_list, TPR_list)))
-        TPR = np.array(TPR_list)
-        FPR = np.array(FPR_list)
-        return TPR,FPR
 
     def roc_for_variable_set(self, variable):
         """
@@ -259,3 +258,35 @@ def fom_simple_max(sig, bkg):
     plt.plot(binf,k,marker='o',color='red')
     plt.savefig('fom_old.png')
     return np.nanmax(k)
+
+
+def plot_roc_curve(TPR, FPR, sample="titanic", real="sorted", glob_local="global", name="name", kernel="rbf", nClass=10):
+    """
+    Method that plots AUC, saves images and table in CSV
+    """
+    import matplotlib.pyplot as plt
+    if(real=='sorted'):
+        TPR = np.sort(TPR,axis=None)
+        FPR = np.sort(FPR,axis=None)
+    if glob_local: glob_local='global'
+    else:          glob_local='local'
+    area = auc(FPR,TPR)
+    plt.figure()
+    lw = 2
+    plt.plot(FPR, TPR, color='darkorange',
+             lw=lw, label='ROC curve (area = %0.2f, N = %0.0f)'  %(area, nClass), linestyle="-", marker="o")
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC curve -' + sample)
+    plt.legend(loc="lower right")
+    if not os.path.exists('./plots/'):
+        os.mkdir('./plots/')
+    plt.savefig('./plots/roc_curve_'+sample+'_'+real+'_'+glob_local+'_'+name+'_'+kernel+'.png')
+    output = pd.DataFrame({'False positive rate': FPR,'True positive rate': TPR, 'Area': area})
+    if not os.path.exists('./output/' + sample + '/'):
+        os.makedirs('./output/' + sample + '/')        
+    output.to_csv('./output/' + sample +  '/' + 'BoostSVM_ROC.csv', index=False)
+    plt.close()
