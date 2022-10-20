@@ -43,7 +43,6 @@ class ModelStoring:
         else:
             print("The file does not exist")
 
-
 def roc_curve_adaboost(Y_thresholds, Y_test) -> tuple:
     """
     Tailored function to create the TPR and FPR, for ROC curve

@@ -12,7 +12,7 @@ import pandas as pd
 from sklearn.utils import resample
 from sklearn.metrics import accuracy_score,auc,precision_score,roc_auc_score,f1_score,recall_score
 # framework includes
-from common.common_methods import data_utils as du
+from common.common_methods import roc_curve_adaboost
 
 
 class GeneticSelection:
@@ -46,7 +46,7 @@ class GeneticSelection:
 
     def execute(self):
         """
-        Method to execute 
+        Method to execute the genetic selections
         """
         best_chromo = np.array([])
         best_score  = []
@@ -55,7 +55,6 @@ class GeneticSelection:
             n_p_y = len(next_generation_y[next_generation_y==1])
             n_n_y = len(next_generation_y[next_generation_y==-1])
             print(n_p_y, n_n_y, n_p_y+n_n_y, 'balance check for every generation')
-            print(type(next_generation_x), len(next_generation_x[0]))
             scores, popx, popy, index = self.fitness_score(next_generation_x, next_generation_y, next_generation_indexes)
             scores, popx, popy, index = self.set_population_size(scores, popx, popy, index, generation, self.population_size)
             if self.termination_criterion(generation, best_score, window=10):
@@ -76,14 +75,11 @@ class GeneticSelection:
             print(f"Best score achieved in generation {generation} is {scores[0]}")
         self.best_pop = index
 
-
     def best_population(self):
         """
         Fetches the best trained indexes, removing repetitions
         """
         best_train_indexes = np.unique(self.best_pop.flatten())
-        Y_final = self.Y_train[best_train_indexes]
-        print(len(Y_final[Y_final==1]), len(Y_final[Y_final==-1]), len(best_train_indexes), len(Y_final), len(self.Y_train), ' mi perrito genetico balanceado?' )
         return np.unique(best_train_indexes)
 
     def initialize_population(self, size, chromosome_length):
@@ -135,6 +131,9 @@ class GeneticSelection:
 
     @lru_cache(maxsize = 1000)
     def memoization_score(self, tuple_chrom_x , tuple_chrom_y):
+        """
+        Helper method to better handle the cache memory
+        """
         chromosome_x, chromosome_y = np.asarray(tuple_chrom_x), np.asarray(tuple_chrom_y)
         self.model.fit(chromosome_x, chromosome_y[0])
         if(self.AB_SVM and self.model.n_classifiers==0): return 0.
@@ -142,8 +141,10 @@ class GeneticSelection:
         score       = self.score_value(self.Y_test, predictions, self.model_type, self.score_type)
         return score
 
-
     def fitness_score(self, pop_x, pop_y, indexes_pop):
+        """
+        Method to obtain the metrics that define a certaun chromosome
+        """
         scores = np.array([])
         for chromosome_x, chromosome_y in zip(pop_x, pop_y):
             array_tuple_x = map(tuple, chromosome_x)
@@ -156,7 +157,6 @@ class GeneticSelection:
         # Indexes sorted by score, see the cross check!
         sorted_indexes  = np.argsort(-1*scores)
         return scores[sorted_indexes], pop_x[sorted_indexes], pop_y[sorted_indexes], indexes_pop[sorted_indexes]
-
 
     def set_population_size(self, scores, popx, popy, index, generation, size):
         """
@@ -370,7 +370,7 @@ class GeneticSelection:
         """
         Y_test = Y_test.astype(float).values # make Y_test and y_pred same type
         if(score_type == 'auc' and model_type == 'absv'):
-            TPR, FPR = du.roc_curve_adaboost(y_pred, Y_test)
+            TPR, FPR = roc_curve_adaboost(y_pred, Y_test)
             score_value = auc(FPR,TPR)
         elif(score_type == 'auc' and model_type != 'absv'):
             score_value = roc_auc_score(Y_test, y_pred)
@@ -390,6 +390,7 @@ class GeneticSelection:
         """
         Method computes the prediction given the score type set
         """
+        X_test = self._check_X(X_test)
         if(score_type == 'auc'):
             if(model_type == 'absv'):
                 return self.model.decision_thresholds(X_test, glob_dec=True)
@@ -399,3 +400,14 @@ class GeneticSelection:
                 return self.model.decision_function(X_test)
         else:
             return self.model.predict(X_test)
+
+    def _check_X(self, X):
+        """
+        Validate assumptions about format of input data. np.array is expected
+        """
+        if type(X) == type(np.array([])):
+            return X
+        else:
+            # Convert pandas into numpy arrays
+            X = X.values
+            return X

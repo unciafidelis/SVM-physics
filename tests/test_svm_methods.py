@@ -16,7 +16,7 @@ X_train, y_train, X_test, y_test = data.dataset(sample_name="titanic", sampling=
 class TestPrecomputed(unittest.TestCase):
     """Tests classes in common_methods"""
     @pytest.fixture(autouse=True)
-    def initdir(self, tmpdir):
+    def initdir(self, tmpdir):        
         print(tmpdir)
         tmpdir.chdir() # change to pytest-provided temporary directory
 
@@ -142,3 +142,6 @@ class TestPrecomputed(unittest.TestCase):
         prc_og = precision_score(y_test, y_pred_og)
         self.assertEqual(acc_og, acc_np)
         self.assertEqual(prc_og, prc_np)
+
+if __name__ == '__main__':
+    unittest.main()

@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 class BoostedSVM:
     """
-    Class that boost a SVM following the AdaBoost recipe
+    Class that boosts a SVM following the AdaBoost recipe
     """
     def __init__(self, C, gammaEnd, myKernel, myDegree=1, myCoef0=1, Diversity=False, early_stop=False, debug=False, train_verbose=False):        
         self.C = C
@@ -41,7 +41,7 @@ class BoostedSVM:
         
     def svc_train(self, myGamma, stepGamma, x_train, y_train, myWeights, count, flag_div, value_div):
         """
-        Method to train a single classifier 
+        Method to train a single classifier and decides if the classifiers stays in ensemble
         """
         if count == 0:
             myGamma = stepGamma
@@ -59,7 +59,7 @@ class BoostedSVM:
                        tol=0.001,
                        cache_size=1000)
             svcB.fit(x_train, y_train, sample_weight=myWeights)
-            y_pred = svcB.predict(x_train)                                        
+            y_pred = svcB.predict(x_train)
             # error calculation
             for i in range(len(y_pred)):
                 if (y_train[i] != y_pred[i]):
@@ -106,7 +106,8 @@ class BoostedSVM:
         # AdaBoost loop
         while True:
             if self.early_flag:
-                if self.early_stop(count, X_test, Y_test, gammaVar): break  # early stop based on a score
+                if self.early_stop(count, X_test, Y_test, gammaVar): 
+                    break  # early stop based on a score
             if count == 0:
                 norm = 1.0
                 new_weights = weights.copy()
@@ -114,15 +115,15 @@ class BoostedSVM:
             new_weights = new_weights/norm
 
             self.weights_list.append(new_weights)
-            if self.debug : print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
-
-            # call svm, weight samples, iterate sigma(gamma), get errors, obtain predicted classifier (h as an array)
+            if self.debug : 
+                print("----------------------------------------------------------------------------------------------------------   -")
+            # Call svm, weight samples, iterate sigma(gamma), get errors, obtain predicted classifier (h as an array)
             gammaVar, error, h, learner = self.svc_train(gammaVar, gammaStep, X_train, Y_train, new_weights, count, div_flag, div_value)
 
             if(gammaVar > gammaMax or error <= 0):# or learner == None or h == None):
                 break
 
-            # count how many times SVM we add the ensemble
+            # Count how many times SVM we add the ensemble
             count += 1
             self.n_classifiers +=1
 
@@ -132,42 +133,42 @@ class BoostedSVM:
                 if(Y_train[i]!=h[i]): fp+=1
                 else:                 tp+=1
         
-            # store the predicted classes
+            # Store the predicted classes
             h_temp = h.tolist()
             h_list.append(h_temp)
 
-            # store errors and precision
+            # Store errors and precision
             self.errors = np.append(self.errors, [error])
             self.precision = np.append(self.precision, [tp / (tp + fp)])
             
-            # calculate diversity
+            # Calculate diversity
             if self.m_div_flag:
                 div_value = self.diversity(X_train, h, count) # cf. h == y_pred
         
-            # classifier weights (alpha), obtain and store
+            # Classifier weights (alpha), obtain and store
             x = (1 - error)/error
             alpha = 0.5 * np.log(x)
             self.alphas   = np.append(self.alphas, alpha)
             self.weak_svm = np.append(self.weak_svm, learner)
 
-            # get training errors used for early stop
+            # Get training errors used for early stop
             # train_score = 1 - accuracy_score(Y_train, self.predict(X_train))
             # self.train_scores = np.append(self.train_scores, train_score)
             
-            # reset weight lists
+            # Reset weight lists
             weights = new_weights.copy()
             new_weights = ([])
             norm = 0.0
-            # set weights for next iteration
+            # Set weights for next iteration
             for i in range(n):
                 x = (-1.0) * alpha * Y_train[i] * h[i]
                 new_weights = np.append(new_weights, [weights[i] * np.exp(x)] )
                 norm += weights[i] * np.exp(x)
 
-            # do loop as long gamma > gammaMin, if gamma < 0, SVM fails exit loop
+            # Do loop as long gamma > gammaMin, if gamma < 0, SVM fails exit loop
             if gammaVar >= gammaMax:#) or (gammaVar < 0):
                 break
-            # end of adaboost loop
+            # End of adaboost loop
 
         print(count,'number of classifiers')
         self.n_classifiers = count
@@ -176,19 +177,19 @@ class BoostedSVM:
             self.n_classifiers = 0
             return self
 
-        # show the training the performance (optional)
+        # Show the training performance (optional)
         if(self.verbose_train):
             h_list = np.array(h_list)            
-            # calculate the final classifier
+            # Calculate the final classifier
             h_alpha = np.array([h_list[i]*self.alphas[i] for i in range(count)])            
-            # final classifier is an array (size of number of data points)
+            # Final classifier is an array (size of number of data points)
             final = ([])
             for j in range(len(h_alpha[0])):
                 suma = 0.0
                 for i in range(count):
                     suma+=h_alpha[i][j]
                     final = np.append(final, [np.sign(suma)])                    
-                    # final precision calculation
+                    # Final precision calculation
                     final_fp, final_tp  = 0,0
                     for i in range(n):
                         if(Y_train[i]!=final[i]):  final_fp+=1
@@ -202,8 +203,7 @@ class BoostedSVM:
         """
         This method makes predictions using already fitted model
         """
-        # print(len(self.alphas), len(self.weak_svm), "how many alphas we have")
-        # print(type(X.shape[0]), 'check size ada-boost')
+        X = self._check_X(X)
         if self.n_classifiers == 0: return np.zeros(X.shape[0])
         svm_preds = np.array([learner.predict(X) for learner in self.weak_svm])
         return np.sign(np.dot(self.alphas, svm_preds))
@@ -212,9 +212,10 @@ class BoostedSVM:
         """
         This method gets div for a single classifier 
         """
-        if count==1: return len(y_pred)/len(y_pred) # for 1st selected classifer, set max diversity
+        if count==1:  # For 1st selected classifer, set max diversity
+            return len(y_pred)/len(y_pred)
         div = 0
-        ensemble_pred = self.predict(x_train) # uses the already selected classifiers in ensemble
+        ensemble_pred = self.predict(x_train) # Uses the already selected classifiers in ensemble
         for i in range(len(y_pred)):
             if  (y_pred[i] != ensemble_pred[i]):  div += 1
             elif(y_pred[i] == ensemble_pred[i]):  div += 0
@@ -257,7 +258,7 @@ class BoostedSVM:
             print(min_test_score, 'min_test_score')
             return True        
         self.test_scores = np.append(self.test_scores, test_score)
-        # early stop definition 3 (see the paper)
+        # Early stop definition 3 (see the paper)
         index_test = int(count/strip_length)
         current_error = self.test_scores[index_test-1]
         past_error = self.test_scores[index_test - int(strip_length/strip_length) - 1]
@@ -274,26 +275,14 @@ class BoostedSVM:
         # print('current:', round(current_error,2), ' past:',round(past_error,2), ' count:', count, ' length: ',
         #       len(self.count_over_train), 'another check', gammaVar, 'count equal:', len(self.count_over_train_equal))
         return len(self.count_over_train) >= 4 or counter_flag or len(self.count_over_train_equal) >= 15# previous_score <= test_score
+
     
-    def _check_X_y(self, X, y):
-        """"
-        Validate assumptions about format of input data. Expecting response variable to be formatted as ±1
-        """
-        assert set(y) == {-1, 1} or set(y) == {-1} or set(y) == {1} # extra conditions for highly imbalance
-        # If input data already is numpy array, do nothing
-        if type(X) == type(np.array([])) and type(y) == type(np.array([])):
-            return X, y
-        else:
-            # convert pandas into numpy arrays
-            X = X.values
-            y = y.values
-            return X, y
-        
     def decision_thresholds(self, X, glob_dec):
         """
         Method to threshold the svm decision, by varying the bias(intercept)
         We need to calculate the AUC
         """
+        X = self._check_X(X)
         svm_decisions = np.array([learner.decision_function(X) for learner in self.weak_svm])
         svm_biases    = np.array([learner.intercept_ for learner in self.weak_svm])
         thres_decision = []
@@ -330,7 +319,31 @@ class BoostedSVM:
         number = np.array(number)
         number = np.cumsum(number,axis=0)
         return np.sign(number)   
-    
+
+    def _check_X_y(self, X, y):
+        """"
+        Validate assumptions about format of input data. Expecting response variable to be formatted as ±1
+        """
+        assert set(y) == {-1, 1} or set(y) == {-1} or set(y) == {1} # extra conditions for highly imbalance
+        # If input data already is numpy array, do nothing
+        if type(X) == type(np.array([])) and type(y) == type(np.array([])):
+            return X, y
+        else:
+            # convert pandas into numpy arrays
+            X = X.values
+            y = y.values
+            return X, y
+
+    def _check_X(self, X):
+        """
+        Same as _check_X_y but only with one variable
+        """
+        if type(X) == type(np.array([])):
+            return X
+        else:
+            X = X.values
+            return X
+            
     def clean(self):
         """
         Method to clean is needed in case of running several times

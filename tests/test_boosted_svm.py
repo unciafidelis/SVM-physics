@@ -33,6 +33,7 @@ class TestBoostedSVM(unittest.TestCase):
         acc = accuracy_score(Y_test, y_preda)
         area = auc(FPR,TPR)
         nWeaks = len(svm_boost.alphas)
+        # print(len(svm_boost.alphas), len(svm_boost.weak_svm), "how many alphas we have")
         plot_roc_curve(TPR,FPR)
         self.assertGreater(prec, 0.5)
         self.assertGreater(acc, 0.5)
