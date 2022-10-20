@@ -72,7 +72,7 @@ class VariableImportance:
     Class that asses the importance of a given variable when training a model
     Input data must be pandas data frames, main methods return an orderdered list of variables
     """
-    def __init__(self, model, X_train, Y_train, X_test, Y_test, global_auc=1.0, roc_area="prob"):
+    def __init__(self, model, X_train, Y_train, X_test, Y_test, global_auc=1.0, roc_area="prob", workpath="."):
         self.m_model = model
         self.m_x_train = X_train
         self.m_y_train = Y_train
@@ -80,6 +80,7 @@ class VariableImportance:
         self.m_y_test = Y_test
         self.m_global_auc = global_auc
         self.m_roc_area = roc_area
+        self.m_workpath = workpath
 
     def roc_for_variable_set(self, variable):
         """
@@ -173,7 +174,7 @@ class VariableImportance:
         import matplotlib.pyplot as plt
         fig = shap.plots.heatmap(shap_values, show=False) # shap.summary_plot(shap_values, X_test.iloc[0:1000,:])
         f = plt.gcf()
-        f.savefig('./files/heatmap.png')
+        f.savefig(self.m_workpath+"/files/heatmap.png")
         plt.close(f)
 
 

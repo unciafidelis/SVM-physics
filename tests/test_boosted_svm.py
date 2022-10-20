@@ -39,5 +39,23 @@ class TestBoostedSVM(unittest.TestCase):
         self.assertGreater(area, 0.5)
         self.assertGreater(nWeaks, 1)
 
+    def test_boosted_svm_div(self):
+        from common.boosted_svm import BoostedSVM
+        svm_boost = BoostedSVM(C=100, gammaEnd=100, myKernel='rbf', myDegree=1, myCoef0=+1,
+                               Diversity=True, early_stop=True, debug=False)
+        svm_boost.fit(X_train, Y_train)
+        y_preda = svm_boost.predict(X_test)
+        y_thresholds = svm_boost.decision_thresholds(X_test, glob_dec=True)
+        TPR, FPR = roc_curve_adaboost(y_thresholds, Y_test)
+        prec = precision_score(Y_test, y_preda)
+        acc = accuracy_score(Y_test, y_preda)
+        area = auc(FPR,TPR)
+        nWeaks = len(svm_boost.alphas)
+        plot_roc_curve(TPR,FPR)
+        self.assertGreater(prec, 0.5)
+        self.assertGreater(acc, 0.5)
+        self.assertGreater(area, 0.5)
+        self.assertGreater(nWeaks, 1)
+
 if __name__ == '__main__':
     unittest.main()

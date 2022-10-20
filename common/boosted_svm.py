@@ -43,7 +43,8 @@ class BoostedSVM:
         """
         Method to train a single classifier 
         """
-        if count == 0: myGamma = stepGamma
+        if count == 0:
+            myGamma = stepGamma
 
         while True:
             if myGamma > self.gammaEnd+stepGamma: return 0, 0, None, None

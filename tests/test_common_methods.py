@@ -14,6 +14,7 @@ from data.data_preparation import DataPreparation
 data = DataPreparation(path="../data/", GA_selection=False)
 X_train, y_train, X_test, y_test = data.dataset(sample_name="titanic", sampling=False, split_sample=0.4)
 model = tree.DecisionTreeClassifier() # svm.SVC(kernel="sigmoid", gamma=1)
+workpath = os.getcwd()
 
 
 class TestModelStoring(unittest.TestCase):
@@ -29,13 +30,12 @@ class TestModelStoring(unittest.TestCase):
         acc_og = accuracy_score(y_test, y_pred)
         prc_og = precision_score(y_test, y_pred)
         from common.common_methods import ModelStoring
-        test_store = ModelStoring(file_name="./files/test_model.pkl")
+        test_store = ModelStoring(file_name=workpath+"/files/test_model.pkl")
         test_store.save_model(model=model)
         model_pickled = test_store.load_model()
         y_pred = model_pickled.predict(X_test)
         acc_pk = accuracy_score(y_test, y_pred)
         prc_pk = precision_score(y_test, y_pred)
-        # print(acc_og, acc_pk, prc_og, prc_pk)
 
 
 class TestVariableImportance(unittest.TestCase):
@@ -83,8 +83,7 @@ class TestVariableImportance(unittest.TestCase):
         warnings.simplefilter("ignore") # safe to ignore numpy warnings for now!
         from common.common_methods import VariableImportance
         test_var_imp = VariableImportance(model=model, X_train=X_train, Y_train=y_train,
-                                          X_test=X_test, Y_test=y_test, roc_area="prob")
-
+                                          X_test=X_test, Y_test=y_test, roc_area="prob", workpath=workpath)
         #ordered_shapley = test_var_imp.shapley_values()
         test_var_imp.shapley_values()
 
