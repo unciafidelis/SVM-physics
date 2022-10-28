@@ -19,7 +19,7 @@ class TestPrecomputed(unittest.TestCase):
     def initdir(self, tmpdir):
         print(tmpdir)
         tmpdir.chdir() # change to pytest-provided temporary directory
-
+    """ 
     def test_linear_precomputed(self):
         from common.svm_methods import LinearPrecomputed
         test_linear = LinearPrecomputed(X_train)
@@ -142,6 +142,38 @@ class TestPrecomputed(unittest.TestCase):
         prc_og = precision_score(y_test, y_pred_og)
         self.assertEqual(acc_og, acc_np)
         self.assertEqual(prc_og, prc_np)
-
+        """
+    def test_kernel_multiplication(self):
+        from common.svm_methods import PolyPrecomputed
+        test_poly = PolyPrecomputed(X_train, gamma=1, deg=2, coef=0)
+        matrix_test = PolyPrecomputed(X_test, X_train, gamma=1, deg=2, coef=0)
+        matrix_poly = test_poly.explicit_calc()
+        matrix_test = matrix_test.explicit_calc()
+        kernels = []
+        kernels.append((1, matrix_poly))
+        kernels.append((1, matrix_poly))
+        kernels_test = []
+        kernels_test.append((1, matrix_test))
+        kernels_test.append((1, matrix_test))
+        from common.svm_methods import KernelMultiplication
+        kernel_multiplication = KernelMultiplication(kernels)
+        kernel_multiplication = kernel_multiplication.product()
+        # kernel_multiplication_test = KernelMultiplication(kernels_test)
+        # kernel_multiplication_test = kernel_multiplication_test.product()
+        print(kernel_multiplication)
+        """
+        model_np = SVC(kernel="precomputed")
+        model_np.fit(kernel_multiplication, y_train)
+        y_pred_np = model_np.predict(kernel_multiplication_test)
+        acc_np = accuracy_score(y_test, y_pred_np)
+        prc_np = precision_score(y_test, y_pred_np)
+        model_og = SVC(kernel="poly", degree=2, gamma=1, coef=0)
+        model_og.fit(X_train, y_train)
+        y_pred_og = model_og.predict(X_test)
+        acc_og = accuracy_score(y_test, y_pred_og)
+        prc_og = precision_score(y_test, y_pred_og)
+        self.assertEqual(acc_og, acc_np)
+        self.assertEqual(prc_og, prc_np)
+        """
 if __name__ == '__main__':
     unittest.main()

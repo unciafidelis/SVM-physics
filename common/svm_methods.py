@@ -113,8 +113,48 @@ class KernelSum():
     def linear_combination(self):
         sum = 0
         for kernel in self.kernels:
-            sum += kernel[0] * kernel[1]
+            sum += kernel[0] * kernel[1] 
         return sum
+
+class KernelMultiplication():
+    """
+    Class that computest the product of kernels
+    result = (a * A)  * (b * B) * ...
+    Input values are gram matrices (kernel matrices)
+    """
+    def __init__(self, kernels=[]):
+        if len(kernels) == 0:
+            print("No input kernels. Goodbye!")
+            return None
+        else:
+            self.kernels = kernels
+
+    def product(self):
+        # result = 
+        # for kernel1 in self.kernels:
+        prod1 = self.kernels[0][0] * self.kernels[0][1]
+        prod2 = self.kernels[1][0] * self.kernels[1][1]
+        print(prod1, type(prod1), prod1.shape)
+        # input()
+
+        # 3x3 matrix
+        X = [[12,7,3],
+            [4 ,5,6],
+            [7 ,8,9]]
+
+        # 3x4 matrix
+        Y = [[5,8,1,2],
+            [6,7,3,0],
+            [4,5,9,1]]
+
+        check = np.matmul(X, Y)
+        print(check)
+        input()    
+        result = np.matmul(prod1, prod2)
+        # result = [[sum(a*b for a,b in zip(prod1_row,prod2_col)) for prod2_col in zip(*prod2)] for prod1_row in prod1]
+            
+            # result = [[sum(a*b for a,b in zip(prod1_row,prod1_col)) for prod1_col in zip(*prod1)] for prod1_row in prod1]
+        return  result
 
 
 
