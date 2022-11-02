@@ -115,33 +115,65 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_kernel_sum(self):
         from common.svm_methods import PolyPrecomputed
-        test_poly = PolyPrecomputed(X_train, gamma=1, deg=1, coef=0)
-        matrix_test = PolyPrecomputed(X_test, X_train, gamma=1, deg=1, coef=0)
-        matrix_poly = test_poly.explicit_calc()
-        matrix_test = matrix_test.explicit_calc()
+        kernel_comp = PolyPrecomputed(X_train, gamma=1, deg=1, coef=0)
+        kernel_test_comp = PolyPrecomputed(X_test, X_train, gamma=1, deg=1, coef=0)
+        kernel_comp = kernel_comp.explicit_calc()
+        kernel_test_comp = kernel_test_comp.explicit_calc()
         kernels = []
-        kernels.append((1, matrix_poly))
-        kernels.append((1, matrix_poly))
-        kernels_test = []
-        kernels_test.append((1, matrix_test))
-        kernels_test.append((1, matrix_test))
+        kernels.append((1, kernel_comp))
+        kernels.append((1, kernel_comp))
+        kernels_test_comp = []
+        kernels_test_comp.append((1, kernel_test_comp))
+        kernels_test_comp.append((1, kernel_test_comp))
         from common.svm_methods import KernelSum
         kernel_sum = KernelSum(kernels)
         kernel_sum = kernel_sum.linear_combination()
-        kernel_sum_test = KernelSum(kernels_test)
+        kernel_sum_test = KernelSum(kernels_test_comp)
         kernel_sum_test = kernel_sum_test.linear_combination()
-        model_np = SVC(kernel="precomputed")
-        model_np.fit(kernel_sum, y_train)
-        y_pred_np = model_np.predict(kernel_sum_test)
-        acc_np = accuracy_score(y_test, y_pred_np)
-        prc_np = precision_score(y_test, y_pred_np)
+        model_sum = SVC(kernel="precomputed")
+        model_sum.fit(kernel_sum, y_train)
+        y_pred_sum = model_sum.predict(kernel_sum_test)
+        acc_sum = accuracy_score(y_test, y_pred_sum)
+        prc_sum = precision_score(y_test, y_pred_sum)
         model_og = SVC(kernel="poly", degree=1, gamma=2, coef0=0)
         model_og.fit(X_train, y_train)
         y_pred_og = model_og.predict(X_test)
         acc_og = accuracy_score(y_test, y_pred_og)
         prc_og = precision_score(y_test, y_pred_og)
-        self.assertEqual(acc_og, acc_np)
-        self.assertEqual(prc_og, prc_np)
+        self.assertEqual(acc_og, acc_sum)
+        self.assertEqual(prc_og, prc_sum)
+
+    def test_kernel_prod(self):
+        from common.svm_methods import PolyPrecomputed
+        kernel_comp = PolyPrecomputed(X_train, gamma=1, deg=1, coef=0)
+        kernel_test_comp = PolyPrecomputed(X_test, X_train, gamma=1, deg=1, coef=0)
+        kernel_comp = kernel_comp.explicit_calc()
+        kernel_test_comp = kernel_test_comp.explicit_calc()
+        kernels = []
+        kernels.append((1, kernel_comp))
+        kernels.append((1, kernel_comp))
+        kernels_test_comp = []
+        kernels_test_comp.append((1, kernel_test_comp))
+        kernels_test_comp.append((1, kernel_test_comp))
+        from common.svm_methods import KernelProd
+        kernel_multiplication = KernelProd(kernels)
+        kernel_multiplication = kernel_multiplication.matrix_product()
+        kernel_multiplication_test = KernelProd(kernels_test_comp)
+        kernel_multiplication_test = kernel_multiplication_test.matrix_product()
+        model_prod = SVC(kernel="precomputed")
+        model_prod.fit(kernel_multiplication,y_train)
+        y_predict_prod = model_prod.predict(kernel_multiplication_test)
+        acc_prod = accuracy_score(y_test,y_predict_prod)
+        prc_prod = precision_score(y_test,y_predict_prod)
+        model_og = SVC(kernel="poly", degree=2, gamma=1, coef0 = 0)
+        model_og.fit(X_train, y_train)
+        y_pred_og = model_og.predict(X_test)
+        acc_og = accuracy_score(y_test,y_pred_og)
+        prc_og= precision_score(y_test,y_pred_og)
+        self.assertEqual(acc_og,acc_prod)
+        self.assertEqual(prc_og,prc_prod)
+        print("product test finished")
+
 
 if __name__ == '__main__':
     unittest.main()
