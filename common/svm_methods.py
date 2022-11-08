@@ -111,10 +111,10 @@ class KernelSum():
             self.kernels = kernels
 
     def linear_combination(self):
-        sum = 0
+        suma = 0
         for kernel in self.kernels:
-            sum += kernel[0] * kernel[1]
-        return sum
+            suma += kernel[0] * kernel[1]
+        return suma
 
 
 class KernelProd():
@@ -137,7 +137,7 @@ class KernelProd():
         prod1 = self.kernels[0][0] * self.kernels[0][1]
         prod2 = self.kernels[1][0] * self.kernels[1][1]
         result = np.multiply(prod1, prod2)
-        for i in range(len(self.kernels)-2):
+        for i in range(len(self.kernels) - 2):
             temp = self.kernels[i+2][0] * self.kernels[i+2][1]
             result = np.multiply(result, temp)
         return result
