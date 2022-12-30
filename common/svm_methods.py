@@ -49,18 +49,41 @@ class RBFPrecomputed():
     def rbf_explicit(self, v1, v2):
         norm = 0
         for i in range(0, len(v1)):
-            norm += (v1[i]-v2[i]) * (v1[i]-v2[i])
+            norm += (v1[i] - v2[i]) * (v1[i] - v2[i])
         return math.exp(-(norm) * self.gamma)
   
     def explicit_calc(self):
         return np.array([[self.rbf_explicit(i, j) for j in self.y ] for i in self.x])
 
     def rbf_np(self, v1, v2):
-        norm = ((v1-v2).dot(v1-v2))
+        norm = ((v1 - v2).dot(v1 - v2))
         return math.exp(-(norm) * self.gamma)
    
     def numpy_calc(self):
         return np.array([[self.rbf_np(i, j) for j in self.y ] for i in self.x])
+
+
+class LaplacePrecomputed():
+    """
+    Class that computes by hand a Laplace kernel
+    Returns a numpy array that is the Laplace transform of the input matrices
+    """
+    def __init__(self, x, y=None, gamma=0.01):
+        self.x = np.array(x)
+        self.gamma = gamma
+        if y is None:
+            self.y = np.array(x)
+        else:
+            self.y = np.array(y)
+
+    def rbf_explicit(self, v1, v2):
+        norm = 0
+        for i in range(0, len(v1)):
+            norm += abs((v1[i] - v2[i]))
+        return math.exp(-(norm) * self.gamma)
+  
+    def explicit_calc(self):
+        return np.array([[self.rbf_explicit(i, j) for j in self.y ] for i in self.x])
 
 
 class PolyPrecomputed():

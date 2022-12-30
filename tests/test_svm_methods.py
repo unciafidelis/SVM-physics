@@ -82,6 +82,30 @@ class TestPrecomputed(unittest.TestCase):
         self.assertEqual(acc_og, acc_np)
         self.assertEqual(prc_og, prc_np)
 
+    def test_laplace_precomputed(self):
+        from common.svm_methods import LaplacePrecomputed
+        test_lap = LaplacePrecomputed(X_train)
+        matrix_test = LaplacePrecomputed(X_test, X_train)
+        # precomputed kernel, explicit calculation
+        matrix_ep = test_lap.explicit_calc()
+        model_ep = SVC(kernel="precomputed")
+        model_ep.fit(matrix_ep, y_train)
+        matrix_test_ep = matrix_test.explicit_calc()
+        y_pred_ep = model_ep.predict(matrix_test_ep)
+        acc_ep = accuracy_score(y_test, y_pred_ep)
+        prc_ep = precision_score(y_test, y_pred_ep)
+        # calculated with sklearn
+        from sklearn.metrics.pairwise import laplacian_kernel
+        model_og = SVC(kernel="precomputed")
+        matrix_og = laplacian_kernel(X_train, gamma=0.01)
+        model_og.fit(matrix_og, y_train)
+        matrix_test_og = laplacian_kernel(X_test, X_train, gamma=0.01)
+        y_pred_og = model_og.predict(matrix_test_og)
+        acc_og = accuracy_score(y_test, y_pred_og)
+        prc_og = precision_score(y_test, y_pred_og)
+        self.assertEqual(acc_og, acc_ep)
+        self.assertEqual(prc_og, prc_ep)
+
     def test_poly_precomputed(self):
         from common.svm_methods import PolyPrecomputed
         test_poly = PolyPrecomputed(X_train, gamma=0.5, deg=2, coef=1)
