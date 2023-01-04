@@ -26,7 +26,7 @@ class TestPrecomputed(unittest.TestCase):
         matrix_test = LinearPrecomputed(X_test, X_train)
         # precomputed kernel, explicit calculation
         matrix_ep = test_linear.explicit_calc()
-        model_ep = SVC(kernel="precomputed")
+        model_ep = SVC(kernel="precomputed", C=100, gamma=0.01)
         model_ep.fit(matrix_ep, y_train)
         matrix_test_ep = matrix_test.explicit_calc()
         y_pred_ep = model_ep.predict(matrix_test_ep)
@@ -34,14 +34,14 @@ class TestPrecomputed(unittest.TestCase):
         prc_ep = precision_score(y_test, y_pred_ep)
         # precomputed kernel, numpy calculation
         matrix_np = test_linear.numpy_calc()
-        model_np = SVC(kernel="precomputed")
+        model_np = SVC(kernel="precomputed", C=100, gamma=0.01)
         model_np.fit(matrix_np, y_train)
         matrix_test_np = matrix_test.numpy_calc()
         y_pred_np = model_np.predict(matrix_test_np)
         acc_np = accuracy_score(y_test, y_pred_np)
         prc_np = precision_score(y_test, y_pred_np)
         # default(original) kernel
-        model_og = SVC(kernel="linear")
+        model_og = SVC(kernel="linear", C=100, gamma=0.01)
         model_og.fit(X_train, y_train)
         y_pred_og = model_og.predict(X_test)
         acc_og = accuracy_score(y_test, y_pred_og)
