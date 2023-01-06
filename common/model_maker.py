@@ -119,28 +119,28 @@ def model_flavors_interest():
     models_auc = []
     mut_rate = 0.25
     
-    models_auc.append(("trad-single-rbf",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "rbf",         "single",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-single-sig",  custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "sigmoid",     "single",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-single-pol",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "poly",        "single",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-single-lin",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "linear",      "single",  "trad", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-single-lap",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "single",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-single-rbf",  custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-single-sig",  custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-single-pol",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-single-lin",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin",  "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-single-lap",  custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap",  "trad", mut_rate, "auc", "roulette", 0.0))
 
-    models_auc.append(("trad-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "sum_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "sum_rbf_pol", "gene", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "sum_rbf_lin", "gene", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "sum_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_pol", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-sum-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lin", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-sum-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "sum_rbf_lap", "trad", mut_rate, "auc", "roulette", 0.0))
 
-    models_auc.append(("trad-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "prd_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "prd_rbf_pol", "gene", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "prd_rbf_lin", "gene", mut_rate, "auc", "roulette", 0.0))
-    models_auc.append(("trad-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "prd_rbf_sig", "gene", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-prd-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-prd-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_pol", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-prd-rbf-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_lin", "trad", mut_rate, "auc", "roulette", 0.0))
+    models_auc.append(("trad-prd-rbf-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "prd_rbf_sig", "trad", mut_rate, "auc", "roulette", 0.0))
 
 
-    models_auc.append(("genHLAUC-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "rbf",         "single", "trad", mut_rate, "auc", "highlow", 0.0))
-    models_auc.append(("genHLAUC-single-sig", custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "sigmoid",     "single", "trad", mut_rate, "auc", "highlow", 0.0))
-    models_auc.append(("genHLAUC-single-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "poly",        "single", "trad", mut_rate, "auc", "highlow", 0.0))
-    models_auc.append(("genHLAUC-single-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "linear",      "single", "trad", mut_rate, "auc", "highlow", 0.0))
-    models_auc.append(("genHLAUC-single-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "single", "trad", mut_rate, "auc", "highlow", 0.0))
+    models_auc.append(("genHLAUC-single-rbf", custom_svm(my_c=100, my_gamma_end=100, myKernel="rbf",          myDegree=1, myCoef0=+1), "default", "rbf", "trad", mut_rate, "auc", "highlow", 0.0))
+    models_auc.append(("genHLAUC-single-sig", custom_svm(my_c=100, my_gamma_end=0.1, myKernel="sigmoid",      myDegree=1, myCoef0=-1), "default", "sig", "trad", mut_rate, "auc", "highlow", 0.0))
+    models_auc.append(("genHLAUC-single-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="poly",         myDegree=2, myCoef0=+1), "default", "pol", "trad", mut_rate, "auc", "highlow", 0.0))
+    models_auc.append(("genHLAUC-single-lin", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="linear",       myDegree=1, myCoef0=+1), "default", "lin", "trad", mut_rate, "auc", "highlow", 0.0))
+    models_auc.append(("genHLAUC-single-lap", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomp", "lap", "trad", mut_rate, "auc", "highlow", 0.0))
 
     models_auc.append(("genHLAUC-sum-rbf-sig", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "sum_rbf_sig", "gene", mut_rate, "auc", "highlow", 0.0))
     models_auc.append(("genHLAUC-sum-rbf-pol", custom_svm(my_c= 10, my_gamma_end=0.1, myKernel="precomputed",  myDegree=1, myCoef0=+1), "precomputed", "sum_rbf_pol", "gene", mut_rate, "auc", "highlow", 0.0))

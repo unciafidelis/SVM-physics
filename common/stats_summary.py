@@ -12,6 +12,7 @@ from sklearn.model_selection import RepeatedKFold
 # framework includes
 from data.data_preparation import DataPreparation
 from common.common_methods import roc_curve_adaboost
+from common.svm_methods import precompute_kernel
 # import model_maker as mm
 # import data_visualization as dv
 
@@ -19,11 +20,7 @@ from common.genetic_selection import GeneticSelection
 
 
 
-def cross_validation(sample_name, model, is_precom, is_single, roc_area, selection, GA_mut=0.25, GA_score='', GA_selec='', GA_coef=0.5, kfolds=1, n_reps=1, path='.'):
-
-    print(is_precom)
-    print(is_single)
-    input()
+def cross_validation(sample_name, model, is_precom, kernel_fcn, roc_area, selection, GA_mut=0.25, GA_score='', GA_selec='', GA_coef=0.5, kfolds=1, n_reps=1, path='.'):
     
     # fetch data_frame without preparation
     data = DataPreparation(path)
@@ -63,13 +60,13 @@ def cross_validation(sample_name, model, is_precom, is_single, roc_area, selecti
             print(len(X_train), len(Y_test), len(GA_train_indexes), 'important check for GA outcome')
             print(len(Y_train[Y_train==1]), 'important check for GA outcome')
 
-        if is_precom: # pre-compute the kernel matrices if requested
-            matrix_train = matrix(X_train)
-            matrix_test  = matrix(X_test)
+        if is_precom=="precomp": # pre-compute the kernel matrices if requested
+            matrix_train = precompute_kernel(kernel_fcn, X_train)
+            matrix_test  = precompute_kernel(kernel_fcn, X_train, X_test)
+            X_test = matrix_test
             model.fit(matrix_train, Y_train)
         else:
             model.fit(X_train, Y_train)
-
 
         n_base_class = 0
         no_zero_classifiers = True

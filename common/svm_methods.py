@@ -164,3 +164,138 @@ class KernelProd():
             temp = self.kernels[i+2][0] * self.kernels[i+2][1]
             result = np.multiply(result, temp)
         return result
+
+
+def precompute_kernel(kernel_fcn, X_train, X_test=None):
+
+    if kernel_fcn == "rbf":
+        if X_test is None:
+            matrix_kernel = RBFPrecomputed(X_train)
+        else:
+            matrix_kernel = RBFPrecomputed(X_test, X_train)
+        return matrix_kernel.explicit_calc()
+    elif kernel_fcn == "pol":
+        if X_test is None:
+            matrix_kernel = PolyPrecomputed(X_train)
+        else:
+            matrix_kernel = PolyPrecomputed(X_test, X_train)
+        return matrix_kernel.explicit_calc()
+    elif kernel_fcn == "lap":
+        if X_test is None:
+            matrix_kernel = LaplacePrecomputed(X_train)
+        else:
+            matrix_kernel = LaplacePrecomputed(X_test, X_train)
+        return matrix_kernel.explicit_calc()
+    elif kernel_fcn == "lin":
+        if X_test is None:
+            matrix_kernel = LinearPrecomputed(X_train)
+        else:
+            matrix_kernel = LinearPrecomputed(X_test, X_train)
+        return matrix_kernel.explicit_calc()
+    elif kernel_fcn == "sum_rbf_sig":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = RBFPrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = RBFPrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_sum = KernelSum(kernels)
+        return kernel_sum.linear_combination()
+            
+    elif kernel_fcn == "sum_rbf_pol":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = PolyPrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = PolyPrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_sum = KernelSum(kernels)
+        return kernel_sum.linear_combination()
+
+    elif kernel_fcn == "sum_rbf_lin":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = LinearPrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = LinearPrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_sum = KernelSum(kernels)
+        return kernel_sum.linear_combination()
+        
+    elif kernel_fcn == "sum_rbf_lap":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = LaplacePrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = LaplacePrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_sum = KernelSum(kernels)
+        return kernel_sum.linear_combination()
+
+    elif kernel_fcn == "prd_rbf_sig":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = RBFPrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = RBFPrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_prd = KernelProd(kernels)
+        return kernel_prod.matrix_product()
+            
+    elif kernel_fcn == "prd_rbf_pol":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = PolyPrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = PolyPrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_prod = KernelProd(kernels)
+        return kernel_prod.matrix_product()
+
+    elif kernel_fcn == "prd_rbf_lin":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = LinearPrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = LinearPrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_prod = KernelProd(kernels)
+        return kernel_prod.matrix_product()
+        
+    elif kernel_fcn == "prd_rbf_lap":
+        if X_test is None:
+            kernel1 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = LaplacePrecomputed(X_train).explicit_calc()
+        else:
+            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = LaplacePrecomputed(X_test, X_train).explicit_calc()
+        kernels = []
+        kernels.append((1, kernel1))
+        kernels.append((1, kernel2))
+        kernel_prod = KernelProd(kernels)
+        return kernel_prod.matrix_product()
+
+
+    print(kernel_fcn, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
