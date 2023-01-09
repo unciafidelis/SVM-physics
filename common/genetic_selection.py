@@ -13,6 +13,7 @@ from sklearn.utils import resample
 from sklearn.metrics import accuracy_score,auc,precision_score,roc_auc_score,f1_score,recall_score
 # framework includes
 from common.common_methods import roc_curve_adaboost
+from common.svm_methods import precompute_kernel
 
 
 class GeneticSelection:
@@ -20,7 +21,7 @@ class GeneticSelection:
     Genetic algorithm for training sub-dataset selection
     It returns an array that contain the selected indexes
     """
-    def __init__(self, model, model_type, X_train, Y_train, X_test, Y_test, pop_size, chrom_len, n_gen, coef, mut_rate, score_type='acc', selec_type='tournament'):
+    def __init__(self, model, model_type, is_precom, kernel_fcn, X_train, Y_train, X_test, Y_test, pop_size, chrom_len, n_gen, coef, mut_rate, score_type='acc', selec_type='tournament'):
         self.model = model
         self.model_type = model_type
         self.X_train = X_train
@@ -28,8 +29,8 @@ class GeneticSelection:
         self.X_test  = X_test
         self.Y_test  = Y_test
         if len(self.Y_test) > len(self.Y_train):
-            self.X_test  = resample(X_test, replace=False, n_samples=10000)
-            self.Y_test  = resample(Y_test, replace=False, n_samples=10000)
+            self.X_test  = resample(X_test, replace=True, n_samples=10000)
+            self.Y_test  = resample(Y_test, replace=True, n_samples=10000)
         self.y0_index = Y_train[Y_train == -1].index
         self.y1_index = Y_train[Y_train ==  1].index
         self.population_size=pop_size
@@ -43,6 +44,12 @@ class GeneticSelection:
             self.AB_SVM = True
         else:
             self.AB_SVM = False
+        self.is_precom = is_precom=="precomp"
+        self.kernel_fcn = kernel_fcn
+        if self.is_precom:
+            input()
+            self.X_test  = precompute_kernel(self.kernel_fcn, self.X_train, self.X_test)
+                    
 
     def execute(self):
         """
@@ -93,7 +100,7 @@ class GeneticSelection:
             population_y.append(chromosome_y.values)
             # keep track of the indexes and propagate them during the GA selection
             index_pop.append(chromosome_x.index)
-        return np.array(population_x),np.array(population_y),np.array(index_pop)
+        return np.array(population_x), np.array(population_y), np.array(index_pop)
 
     def get_subset(self, size, count): #size==chrom_size
         """
@@ -135,7 +142,13 @@ class GeneticSelection:
         Helper method to better handle the cache memory
         """
         chromosome_x, chromosome_y = np.asarray(tuple_chrom_x), np.asarray(tuple_chrom_y)
-        self.model.fit(chromosome_x, chromosome_y[0])
+        print(self.is_precom)
+        if self.is_precom: # pre-compute the kernel matrices if requested
+            matrix_train = precompute_kernel(self.kernel_fcn, chromosome_x)
+            self.model.fit(matrix_train, chromosome_y[0])
+        else:
+            self.model.fit(chromosome_x, chromosome_y[0])
+        # self.model.fit(chromosome_x, chromosome_y[0])
         if(self.AB_SVM and self.model.n_classifiers==0): return 0.
         predictions = self.model_predictions(self.X_test, self.model_type, self.score_type)
         score       = self.score_value(self.Y_test, predictions, self.model_type, self.score_type)

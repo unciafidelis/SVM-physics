@@ -22,9 +22,9 @@ class TestPrecomputed(unittest.TestCase):
         from common import stats_summary as ss
 
 
-        process = 10 # int(sys.argv[1])     # batch process
+        process = 13 # int(sys.argv[1])     # batch process
         name = "titanic" # str(sys.argv[2])        # sample name
-        path = "../data/" # str(sys.argv[3])        # path where code lives
+        path = "./data" # str(sys.argv[3])        # path where code lives
         boot_kfold = "kfold" #str(sys.argv[4])  # use bootstrap or kfold
         ensem_single = "ensemble" # str(sys.argv[5])# use ensemble or standard classifiers
 
@@ -61,12 +61,12 @@ class TestPrecomputed(unittest.TestCase):
         df = pd.concat([col_auc["auc"], col_prc["prc"], col_f1["f1"], col_rec["rec"], col_acc["acc"], col_gmn["gmn"], col_time["time"], col_base["n_base"], col_size["n_train"]],
                        axis=1, keys=["auc", "prc", "f1", "rec", "acc", "gmn", "time", "n_base", "n_train"])
 
-        dir_name_csv = path+"/stats_results_single/"+name+"/"+boot_kfold+"/"
+        dir_name_csv ="./results/stats_results_single/"+name+"/"+boot_kfold+"/"
 
         if not os.path.exists(dir_name_csv):
-            os.mkdir(dir_name_csv)
+            os.makedirs(dir_name_csv)
             
-        name_csv = dir_name_cs + model_auc[0]+"_1_"+boot_kfold+".csv" 
+        name_csv = dir_name_csv + model_auc[0]+"_1_"+boot_kfold+".csv" 
         df.to_csv(str(name_csv), index=False)
         
 

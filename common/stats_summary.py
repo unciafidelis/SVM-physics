@@ -51,7 +51,7 @@ def cross_validation(sample_name, model, is_precom, kernel_fcn, roc_area, select
             sample_chromn_len = 100
             
         if selection == 'gene': # genetic selection
-            GA_selection = GeneticSelection(model, roc_area, X_train, Y_train, X_test, Y_test,
+            GA_selection = GeneticSelection(model, roc_area, is_precom, kernel_fcn, X_train, Y_train, X_test, Y_test,
                                             pop_size=10, chrom_len=sample_chromn_len, n_gen=50, coef=GA_coef,
                                             mut_rate=GA_mut, score_type=GA_score, selec_type=GA_selec)
             GA_selection.execute()
@@ -62,8 +62,7 @@ def cross_validation(sample_name, model, is_precom, kernel_fcn, roc_area, select
 
         if is_precom=="precomp": # pre-compute the kernel matrices if requested
             matrix_train = precompute_kernel(kernel_fcn, X_train)
-            matrix_test  = precompute_kernel(kernel_fcn, X_train, X_test)
-            X_test = matrix_test
+            X_test = precompute_kernel(kernel_fcn, X_train, X_test)
             model.fit(matrix_train, Y_train)
         else:
             model.fit(X_train, Y_train)

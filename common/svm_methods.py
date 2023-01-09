@@ -254,7 +254,7 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         kernels = []
         kernels.append((1, kernel1))
         kernels.append((1, kernel2))
-        kernel_prd = KernelProd(kernels)
+        kernel_prod = KernelProd(kernels)
         return kernel_prod.matrix_product()
             
     elif kernel_fcn == "prd_rbf_pol":
