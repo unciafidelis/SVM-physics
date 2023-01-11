@@ -15,7 +15,6 @@ from common.common_methods import roc_curve_adaboost
 from common.svm_methods import precompute_kernel
 # import model_maker as mm
 # import data_visualization as dv
-
 from common.genetic_selection import GeneticSelection
 
 

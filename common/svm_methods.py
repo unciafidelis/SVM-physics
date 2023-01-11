@@ -167,7 +167,9 @@ class KernelProd():
 
 
 def precompute_kernel(kernel_fcn, X_train, X_test=None):
-
+    """
+    returns kernel matrix
+    """
     if kernel_fcn == "rbf":
         if X_test is None:
             matrix_kernel = RBFPrecomputed(X_train)

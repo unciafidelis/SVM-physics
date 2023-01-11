@@ -29,15 +29,15 @@ class GeneticSelection:
         self.X_test  = X_test
         self.Y_test  = Y_test
         if len(self.Y_test) > len(self.Y_train):
-            self.X_test  = resample(X_test, replace=True, n_samples=10000)
-            self.Y_test  = resample(Y_test, replace=True, n_samples=10000)
+            self.X_test  = resample(X_test, replace=False, n_samples=10000)
+            self.Y_test  = resample(Y_test, replace=False, n_samples=10000)
         self.y0_index = Y_train[Y_train == -1].index
         self.y1_index = Y_train[Y_train ==  1].index
         self.population_size=pop_size
         self.chrom_len = chrom_len
         self.n_generations = n_gen # maximum number of iterations
         self.coef = coef
-        self.mutation_rate=mut_rate
+        self.mutation_rate = mut_rate
         self.score_type = score_type
         self.selec_type = selec_type
         if(model_type == 'absv'):
@@ -45,11 +45,7 @@ class GeneticSelection:
         else:
             self.AB_SVM = False
         self.is_precom = is_precom=="precomp"
-        self.kernel_fcn = kernel_fcn
-        if self.is_precom:
-            input()
-            self.X_test  = precompute_kernel(self.kernel_fcn, self.X_train, self.X_test)
-                    
+        self.kernel_fcn = kernel_fcn                    
 
     def execute(self):
         """
@@ -61,7 +57,7 @@ class GeneticSelection:
         for generation in tqdm(range(self.n_generations)):
             n_p_y = len(next_generation_y[next_generation_y==1])
             n_n_y = len(next_generation_y[next_generation_y==-1])
-            print(n_p_y, n_n_y, n_p_y+n_n_y, 'balance check for every generation')
+            print(n_p_y, n_n_y, n_p_y + n_n_y, 'balance check for every generation')
             scores, popx, popy, index = self.fitness_score(next_generation_x, next_generation_y, next_generation_indexes)
             scores, popx, popy, index = self.set_population_size(scores, popx, popy, index, generation, self.population_size)
             if self.termination_criterion(generation, best_score, window=10):
@@ -135,22 +131,21 @@ class GeneticSelection:
 
         return X_balanced, y_balanced
 
-
     @lru_cache(maxsize = 1000)
     def memoization_score(self, tuple_chrom_x , tuple_chrom_y):
         """
         Helper method to better handle the cache memory
         """
         chromosome_x, chromosome_y = np.asarray(tuple_chrom_x), np.asarray(tuple_chrom_y)
-        print(self.is_precom)
         if self.is_precom: # pre-compute the kernel matrices if requested
             matrix_train = precompute_kernel(self.kernel_fcn, chromosome_x)
+            X_test = precompute_kernel(self.kernel_fcn, chromosome_x, self.X_test)
             self.model.fit(matrix_train, chromosome_y[0])
         else:
+            X_test = self.X_test
             self.model.fit(chromosome_x, chromosome_y[0])
-        # self.model.fit(chromosome_x, chromosome_y[0])
         if(self.AB_SVM and self.model.n_classifiers==0): return 0.
-        predictions = self.model_predictions(self.X_test, self.model_type, self.score_type)
+        predictions = self.model_predictions(X_test, self.model_type, self.score_type)
         score       = self.score_value(self.Y_test, predictions, self.model_type, self.score_type)
         return score
 
@@ -184,12 +179,11 @@ class GeneticSelection:
             index  = index[:size]
         return scores, popx, popy, index
 
-
     def selection(self, pop_x, pop_y, data_index, coef=0.5):
         """
         High-Low-fit selection
+        high fit and low fit parts of population
         """
-        # high fit and low fit parts of population
         indices = np.array([i for i in range(len(pop_x))])
         hf_indexes = indices[:int(len(indices)*coef)]
         lf_indexes = indices[int(len(indices)*coef):]
@@ -410,7 +404,7 @@ class GeneticSelection:
             elif(model_type == 'prob'):
                 return self.model.predict_proba(X_test)[:,1]
             elif(model_type == 'deci'):
-                return self.model.decision_function(X_test)
+                return self.model.predict(X_test) # self.model.decision_function(X_test)
         else:
             return self.model.predict(X_test)
 

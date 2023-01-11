@@ -17,69 +17,71 @@ class DataPreparation:
         self.genetic = GA_selection
         self.workpath = path
 
-    # fetch data
     def fetch_data(self, sample):
+        """
+        Function to fetch the data
+        """
         if sample == "titanic":
-            data_set = pd.read_csv(self.workpath+"/datasets/titanic.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/titanic.csv")
         elif sample == "cancer":
-            data_set = pd.read_csv(self.workpath+"/datasets/breast_cancer.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/breast_cancer.csv")
         elif sample == "german":
-            data_set = pd.read_csv(self.workpath+"/datasets/german.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/german.csv")
         elif sample == "heart":
-            data_set = pd.read_csv(self.workpath+"/datasets/heart.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/heart.csv")
         elif sample == "solar":
-            data_set = pd.read_csv(self.workpath+"/datasets/solar.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/solar.csv")
         elif sample == "car":
-            data_set = pd.read_csv(self.workpath+"/datasets/car.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/car.csv")
         elif sample == "ecoli":
-            data_set = pd.read_csv(self.workpath+"/datasets/ecoli.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/ecoli.csv")
         elif sample == "wine":
-            data_set = pd.read_csv(self.workpath+"/datasets/wine.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/wine.csv")
         elif sample == "abalone":
-            data_set = pd.read_csv(self.workpath+"/datasets/abalone.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/abalone.csv")
         elif sample == "adult":
-            data_set = pd.read_csv(self.workpath+"/datasets/adult.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/adult.csv")
         elif sample == "connect":
-            data_set = pd.read_csv(self.workpath+"/datasets/connect.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/connect.csv")
         elif sample == "contra":
-            data_set = pd.read_csv(self.workpath+"/datasets/contra.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/contra.csv")
         elif sample == "tac_toe":
-            data_set = pd.read_csv(self.workpath+"/datasets/tac_toe.csv")
+            data_set = pd.read_csv(self.workpath+"/data/datasets/tac_toe.csv")
         elif sample == "belle2_i":
-            file = uproot.open(self.workpath+"/datasets/belle2_kpipi0.root")            
+            file = uproot.open(self.workpath+"/data/datasets/belle2_kpipi0.root")            
             data_set = file["combined"].arrays(library="pd")
         elif sample == "belle2_ii":
-            file = uproot.open(self.workpath+"/datasets/belle2_kpi.root")
+            file = uproot.open(self.workpath+"/data/datasets/belle2_kpi.root")
             data_set = file["combined"].arrays(library="pd")
         elif sample == "belle2_iii":
-            file_train = uproot.open(self.workpath+"/datasets/train_D02k3pi.root")
+            file_train = uproot.open(self.workpath+"/data/datasets/train_D02k3pi.root")
             data_train = file_train["d0tree"].arrays(library="pd")
-            file_test  = uproot.open(self.workpath+"/datasets/test_D02k3pi.root")
+            file_test  = uproot.open(self.workpath+"/data/datasets/test_D02k3pi.root")
             data_test  = file_test["d0tree"].arrays(library="pd")
             return (data_train, data_test)
         elif sample == "belle2_iv":
-            file_train = uproot.open(self.workpath+"/datasets/train_D02kpipi0vxVc-cont0p5.root")
-            #file_train = uproot.open(self.workpath+"/datasets/test_belle2_iv.root")
+            file_train = uproot.open(self.workpath+"/data/datasets/train_D02kpipi0vxVc-cont0p5.root")
+            #file_train = uproot.open(self.workpath+"/data/datasets/test_belle2_iv.root")
             data_train = file_train["d0tree"].arrays(library="pd")
-            file_test  = uproot.open(self.workpath+"/datasets/test_D02kpipi0vxVc-cont0p5.root")
+            file_test  = uproot.open(self.workpath+"/data/datasets/test_D02kpipi0vxVc-cont0p5.root")
             data_test  = file_test["d0tree"].arrays(library="pd")
             #return data_train
             return (data_train, data_test)
         elif sample == "belle2_challenge":
-            file_train = uproot.open(self.workpath+"/datasets/train_D02kpipi0vxVc-cont0p5.root")
+            file_train = uproot.open(self.workpath+"/data/datasets/train_D02kpipi0vxVc-cont0p5.root")
             data_train = file_train["d0tree"].arrays(library="pd")
-            file_test  = uproot.open(self.workpath+"/datasets/test_D02kpipi0vxVc-cont0p5.root")
+            file_test  = uproot.open(self.workpath+"/data/datasets/test_D02kpipi0vxVc-cont0p5.root")
             data_test  = file_test["d0tree"].arrays(library="pd")
             return (data_train, data_test)
         else:
             sys.exit("The sample name provided does not exist. Try again!")
         return data_set
 
-
-    # call data
     def dataset(self, sample_name, data_set=None, data_train=None, data_test=None,
                 sampling=False, split_sample=0, indexes = None):
-
+        """
+        Method to prepare data
+        """
         train_test = False # to check if data is divided
         # if sampling = True, sampling is done outside data_preparation,
         # sample is fetched externally

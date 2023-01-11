@@ -17,10 +17,10 @@ process = int(sys.argv[1])      # batch process
 name = str(sys.argv[2])         # sample name
 path = str(sys.argv[3])         # path where code lives
 boot_kfold = str(sys.argv[4])   # use bootstrap or kfold
-ensem_single = str(sys.argv[5]) # use ensemble or standard classifiers
+exotic_single = str(sys.argv[5]) # use ensemble or standard classifiers
 
-model_auc = mm.model_loader_batch(process, ensemble_single=ensem_single)[1]
-model_auc_names = mm.model_loader_batch(process, ensemble_single=ensem_single)[0]
+model_auc = mm.model_loader_batch(process, exotic_single=exotic_single)[1]
+model_auc_names = mm.model_loader_batch(process, exotic_single=exotic_single)[0]
 n_cycles = 10
 k_folds  = 4
 n_reps   = 2

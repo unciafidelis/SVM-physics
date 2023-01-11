@@ -4,7 +4,7 @@ channels:
   - defaults
 dependencies:
   - python=3.10.7
-  - conda: 
+  - conda:
     - root # install if needed (huge package)
   - pip
   - pip:

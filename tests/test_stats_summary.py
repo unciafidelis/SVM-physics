@@ -2,7 +2,6 @@ import os
 import sys
 import unittest
 import pytest
-import numpy as np
 
 
 class TestPrecomputed(unittest.TestCase):
@@ -22,7 +21,7 @@ class TestPrecomputed(unittest.TestCase):
         from common import stats_summary as ss
 
 
-        process = 13 # int(sys.argv[1])     # batch process
+        process = 26 # int(sys.argv[1])     # batch process
         name = "titanic" # str(sys.argv[2])        # sample name
         path = "./data" # str(sys.argv[3])        # path where code lives
         boot_kfold = "kfold" #str(sys.argv[4])  # use bootstrap or kfold
@@ -31,7 +30,7 @@ class TestPrecomputed(unittest.TestCase):
         model_auc = mm.model_loader_batch(process, ensemble_single=ensem_single)[1]
         model_auc_names = mm.model_loader_batch(process, ensemble_single=ensem_single)[0]
         n_cycles = 2
-        k_folds  = 2
+        k_folds  = 3
         n_reps   = 2
         roc_area = "deci"
         if model_auc[3] == "absvm":
