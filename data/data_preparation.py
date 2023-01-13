@@ -146,9 +146,9 @@ class DataPreparation:
         # return X,Y without any spliting (for bootstrap and kfold-CV)
         if sampling:
             if not train_test:
-                return X,Y
+                return X,Y.astype("int")
             else:
-                return X_train, Y_train, X_test, Y_test   
+                return X_train, Y_train.astype("int"), X_test, Y_test.astype("int")
                                   
         # divide sample into train and test sample
         if indexes is None:
@@ -161,11 +161,13 @@ class DataPreparation:
                 X_train, X_test, Y_train, Y_test = self.indexes_split(X_train, Y_train, X_test, Y_test,
                                                                       split_indexes=indexes, train_test=train_test)
                 
-        return X_train, Y_train, X_test, Y_test
+        return X_train, Y_train.astype("int"), X_test, Y_test.astype("int")
 
     
     def indexes_split(self, X, Y, x_test=None, y_test=None, split_indexes=None, train_test=False):
-        """ Function to split train and test data given train indexes"""
+        """ 
+        Function to split train and test data given train indexes
+        """
         if not train_test:
             total_indexes = np.array(X.index).tolist()        
             train_indexes = split_indexes.tolist()
@@ -182,9 +184,10 @@ class DataPreparation:
         return X_train, X_test, Y_train, Y_test
 
     
-    # belle2 data preparation
     def belle2(self, data_set, sampling, sample_name):
-        
+        """
+        belle2 data preparation
+        """        
         if(sampling or self.genetic): # sampling was already carried, don"t sample again!
             Y = data_set["Class"]
             # Data scaling [0,1]
@@ -205,11 +208,11 @@ class DataPreparation:
 
         return X,Y
 
-
-    # belle2 data preparation
     def belle2_iv(self, data_train, data_test, sampling, sample_name):
+        """
+        belle2 data preparation
         #def belle2_iv(self, data_train, sampling, sample_name):
-        
+        """        
         data_train = data_train.copy()
         data_train.loc[data_train["isSignal"] == 0, "isSignal"] = -1
         data_test = data_test.copy()

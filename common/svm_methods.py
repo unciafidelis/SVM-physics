@@ -1,6 +1,5 @@
 import math
 import numpy as np
-from sklearn.svm import SVC, LinearSVC
 
 
 class LinearPrecomputed():
@@ -120,6 +119,31 @@ class PolyPrecomputed():
         return np.array([[self.poly_np(i, j) for j in self.y ] for i in self.x])
 
 
+class SigmoidPrecomputed():
+    """
+    Class that computes by hand a sigmoid kernel
+    Returns a numpy array
+    """
+    def __init__(self, x, y=None, gamma=0.01, coef=0):
+        self.x = np.array(x)
+        self.gamma = gamma
+        self.coef = coef
+        if y is None:
+            self.y = np.array(x)
+        else:
+            self.y = np.array(y)
+
+    def sigmoid_explicit(self, v1, v2):
+        prod = 0
+        for i in range(0, len(v1)):
+            prod += v1[i] * v2[i]
+        prod = self.gamma * prod + self.coef
+        return math.tanh(prod)
+  
+    def explicit_calc(self):
+        return np.array([[self.sigmoid_explicit(i, j) for j in self.y ] for i in self.x])
+
+
 class KernelSum():
     """
     Class that computest the linear combination of kernels
@@ -194,19 +218,24 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         else:
             matrix_kernel = LinearPrecomputed(X_test, X_train)
         return matrix_kernel.explicit_calc()
+    elif kernel_fcn == "sig":
+        if X_test is None:
+            matrix_kernel = SigmoidPrecomputed(X_train)
+        else:
+            matrix_kernel = SigmoidPrecomputed(X_test, X_train)
+        return matrix_kernel.explicit_calc()
     elif kernel_fcn == "sum_rbf_sig":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = SigmoidPrecomputed(X_train).explicit_calc()
         else:
             kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = SigmoidPrecomputed(X_test, X_train).explicit_calc()
         kernels = []
         kernels.append((1, kernel1))
         kernels.append((1, kernel2))
         kernel_sum = KernelSum(kernels)
-        return kernel_sum.linear_combination()
-            
+        return kernel_sum.linear_combination()            
     elif kernel_fcn == "sum_rbf_pol":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
@@ -219,7 +248,6 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         kernels.append((1, kernel2))
         kernel_sum = KernelSum(kernels)
         return kernel_sum.linear_combination()
-
     elif kernel_fcn == "sum_rbf_lin":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
@@ -245,20 +273,18 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         kernels.append((1, kernel2))
         kernel_sum = KernelSum(kernels)
         return kernel_sum.linear_combination()
-
     elif kernel_fcn == "prd_rbf_sig":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = RBFPrecomputed(X_train).explicit_calc()
+            kernel2 = SigmoidPrecomputed(X_train).explicit_calc()
         else:
             kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = RBFPrecomputed(X_test, X_train).explicit_calc()
+            kernel2 = SigmoidPrecomputed(X_test, X_train).explicit_calc()
         kernels = []
         kernels.append((1, kernel1))
         kernels.append((1, kernel2))
         kernel_prod = KernelProd(kernels)
-        return kernel_prod.matrix_product()
-            
+        return kernel_prod.matrix_product()            
     elif kernel_fcn == "prd_rbf_pol":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
@@ -271,7 +297,6 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         kernels.append((1, kernel2))
         kernel_prod = KernelProd(kernels)
         return kernel_prod.matrix_product()
-
     elif kernel_fcn == "prd_rbf_lin":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
@@ -283,8 +308,7 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         kernels.append((1, kernel1))
         kernels.append((1, kernel2))
         kernel_prod = KernelProd(kernels)
-        return kernel_prod.matrix_product()
-        
+        return kernel_prod.matrix_product()        
     elif kernel_fcn == "prd_rbf_lap":
         if X_test is None:
             kernel1 = RBFPrecomputed(X_train).explicit_calc()
@@ -297,7 +321,3 @@ def precompute_kernel(kernel_fcn, X_train, X_test=None):
         kernels.append((1, kernel2))
         kernel_prod = KernelProd(kernels)
         return kernel_prod.matrix_product()
-
-
-    print(kernel_fcn, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-

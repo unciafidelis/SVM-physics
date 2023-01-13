@@ -1,9 +1,9 @@
 """
--------------------------------------------------------------------
+-----------------------------------------------------------------------------------
  Authors: A. Ramirez-Morales
  htcondor job submitter
  usage: python3 ./scripts/submit_stats_svm.py sample_name boot/kfold exotic/single
--------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 """
 from sys import argv
 from os import system,getenv,getuid,getcwd,popen

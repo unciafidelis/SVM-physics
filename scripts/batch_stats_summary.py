@@ -17,13 +17,13 @@ process = int(sys.argv[1])      # batch process
 name = str(sys.argv[2])         # sample name
 path = str(sys.argv[3])         # path where code lives
 boot_kfold = str(sys.argv[4])   # use bootstrap or kfold
-exotic_single = str(sys.argv[5]) # use ensemble or standard classifiers
+exotic_single = str(sys.argv[5]) # use exotic or standard classifiers
 
 model_auc = mm.model_loader_batch(process, exotic_single=exotic_single)[1]
 model_auc_names = mm.model_loader_batch(process, exotic_single=exotic_single)[0]
 n_cycles = 10
 k_folds  = 4
-n_reps   = 2
+n_reps   = 3
 roc_area = "deci"
 
 if model_auc[3] == "absvm":
@@ -58,7 +58,7 @@ dir_name_csv = path + "/results/stats_results/"+name+"/"+boot_kfold+"/"
 if not os.path.exists(dir_name_csv):
     os.makedirs(dir_name_csv)
     
-name_csv = dir_name_csv + model_auc[0]+"_1_"+boot_kfold+".csv" 
+name_csv = dir_name_csv + model_auc[0]+"_"+boot_kfold+".csv" 
 df.to_csv(str(name_csv), index=False)
 
 end = datetime.datetime.now()
