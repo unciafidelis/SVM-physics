@@ -19,7 +19,7 @@ class TestStatsSummary(unittest.TestCase):
         from common import model_maker as mm
         from common import stats_summary as ss
 
-        process = 25 # batch process
+        process = 10 # batch process
         name = "titanic"
         path = "."
         boot_kfold = "kfold"
@@ -53,12 +53,9 @@ class TestStatsSummary(unittest.TestCase):
         col_size= pd.DataFrame(data=n_train,columns=["n_train"])
         df = pd.concat([col_auc["auc"], col_prc["prc"], col_f1["f1"], col_rec["rec"], col_acc["acc"], col_gmn["gmn"], col_time["time"], col_base["n_base"], col_size["n_train"]],
                        axis=1, keys=["auc", "prc", "f1", "rec", "acc", "gmn", "time", "n_base", "n_train"])
-
         dir_name_csv ="./results/stats_results_tests/"+name+"/"+boot_kfold+"/"
-
         if not os.path.exists(dir_name_csv):
-            os.makedirs(dir_name_csv)
-            
+            os.makedirs(dir_name_csv)            
         name_csv = dir_name_csv + model_auc[0]+"_1_"+boot_kfold+".csv" 
         df.to_csv(str(name_csv), index=False)
         

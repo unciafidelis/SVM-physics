@@ -46,9 +46,7 @@ def plotmetric(metric_list, name, share):
                 dft = pd.read_csv(workpath + '/results/stats_results/' + sample + '/kfold' + '/' + filename, index_col=None)
                 col = dft.columns
                 data_mean = pd.DataFrame(dft.mean())
-                t = pd.concat([t, data_mean.loc[metric]]) 
-                #print(u,t.tail())
-
+                t = pd.concat([t, data_mean.loc[metric]])
             dt2 = pd.concat([dt2, p_file_data_frame])
             dt2.insert(0,'t', t.values)
             axes[q].plot(dt2["name"].to_numpy(), dt2['t'].to_numpy(), color[k], marker=mark[k], markersize=2, linewidth=1.0)
@@ -60,8 +58,8 @@ def plotmetric(metric_list, name, share):
             axes[q].set_yscale('log')
             axes[q].set_ylabel('Number of Training Vectors', fontsize=11)
         elif metric=='n_base':
-            axes[q].set_yscale('log')
-            #axes[q].set_yticks(np.arange(0.0, 8000, step=500))
+            #axes[q].set_yscale('log')
+            axes[q].set_yticks(np.arange(0.0, 8000, step=500))
             axes[q].set_ylabel('Number of Classifiers', fontsize=11)
         else:
             axes[q].set_yticks(np.arange(0.0, 1.2, step=0.1))
@@ -79,7 +77,9 @@ def plotmetric(metric_list, name, share):
         plt.legend(sample_list, prop={"size":14},loc='lower right', bbox_to_anchor=(1.16, 0.7), frameon=False)
         #  fig.tight_layout()
         #  plt.savefig(u+'subplot.pdf')
-        plt.savefig(name+'combined.pdf')
+        if not os.path.exists(workpath +"/plots/"):
+            os.makedirs(workpath +"/plots/")
+        plt.savefig(workpath +"/plots/" +name+'combined.pdf')
 
 
 met = ['acc', 'prc', 'auc']

@@ -13,7 +13,7 @@ from sklearn.utils import resample
 from sklearn.metrics import accuracy_score,auc,precision_score,roc_auc_score,f1_score,recall_score
 # framework includes
 from common.common_methods import roc_curve_adaboost
-from common.svm_methods import precompute_kernel
+from common.svm_methods import compute_kernel
 
 
 class GeneticSelection:
@@ -138,8 +138,8 @@ class GeneticSelection:
         """
         chromosome_x, chromosome_y = np.asarray(tuple_chrom_x), np.asarray(tuple_chrom_y)
         if self.is_precom: # pre-compute the kernel matrices if requested
-            matrix_train = precompute_kernel(self.kernel_fcn, chromosome_x)
-            X_test = precompute_kernel(self.kernel_fcn, chromosome_x, self.X_test)
+            matrix_train = compute_kernel(self.kernel_fcn, chromosome_x)
+            X_test = compute_kernel(self.kernel_fcn, chromosome_x, self.X_test)
             self.model.fit(matrix_train, chromosome_y[0])
         else:
             X_test = self.X_test

@@ -12,7 +12,7 @@ from sklearn.model_selection import RepeatedKFold
 # framework includes
 from data.data_preparation import DataPreparation
 from common.common_methods import roc_curve_adaboost
-from common.svm_methods import precompute_kernel
+from common.svm_methods import compute_kernel
 # import model_maker as mm
 # import data_visualization as dv
 from common.genetic_selection import GeneticSelection
@@ -60,8 +60,8 @@ def cross_validation(sample_name, model, is_precom, kernel_fcn, roc_area, select
             print(len(Y_train[Y_train==1]), 'important check for GA outcome')
 
         if is_precom=="precomp": # pre-compute the kernel matrices if requested
-            matrix_train = precompute_kernel(kernel_fcn, X_train)
-            X_test = precompute_kernel(kernel_fcn, X_train, X_test)
+            matrix_train = compute_kernel(kernel_fcn, X_train)
+            X_test = compute_kernel(kernel_fcn, X_train, X_test)
             model.fit(matrix_train, Y_train)
         else:
             model.fit(X_train, Y_train)

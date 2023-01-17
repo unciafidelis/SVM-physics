@@ -1,3 +1,4 @@
+import sys
 import math
 import numpy as np
 
@@ -7,12 +8,15 @@ class LinearPrecomputed():
     Class that computes by hand a linear kernel
     Returns a numpy array that is the dot product of the input matrices
     """
-    def __init__(self, x, y=None):
-        self.x = np.array(x)
-        if y is None:
-            self.y = np.array(x)
+    def __init__(self, x):
+        self.x = np.array(x[0])
+        if len(x)==1:
+            self.y = np.array(x[0])
+        elif len(x)==2:
+            self.y = np.array(x[1])
         else:
-            self.y = np.array(y)
+            print("Format not supported. Exiting...")
+            sys.exit()            
 
     @staticmethod
     def linear_explicit(v1, v2):
@@ -21,7 +25,7 @@ class LinearPrecomputed():
             prod += v1[i] * v2[i]
         return prod
   
-    def explicit_calc(self):
+    def compute(self):
         return np.array([[self.linear_explicit(i, j) for j in self.y ] for i in self.x])
 
     @staticmethod
@@ -37,13 +41,16 @@ class RBFPrecomputed():
     Class that computes by hand a RBF kernel
     Returns a numpy array that is the gaussian transform of the input matrices
     """
-    def __init__(self, x, y=None, gamma=0.01):
-        self.x = np.array(x)
+    def __init__(self, x, gamma=0.01):
         self.gamma = gamma
-        if y is None:
-            self.y = np.array(x)
+        self.x = np.array(x[0])
+        if len(x)==1:
+            self.y = np.array(x[0])
+        elif len(x)==2:
+            self.y = np.array(x[1])
         else:
-            self.y = np.array(y)
+            print("Format not supported. Exiting...")
+            sys.exit()
 
     def rbf_explicit(self, v1, v2):
         norm = 0
@@ -51,7 +58,7 @@ class RBFPrecomputed():
             norm += (v1[i] - v2[i]) * (v1[i] - v2[i])
         return math.exp(-(norm) * self.gamma)
   
-    def explicit_calc(self):
+    def compute(self):
         return np.array([[self.rbf_explicit(i, j) for j in self.y ] for i in self.x])
 
     def rbf_np(self, v1, v2):
@@ -67,13 +74,16 @@ class LaplacePrecomputed():
     Class that computes by hand a Laplace kernel
     Returns a numpy array that is the Laplace transform of the input matrices
     """
-    def __init__(self, x, y=None, gamma=0.01):
-        self.x = np.array(x)
+    def __init__(self, x, gamma=0.01):
         self.gamma = gamma
-        if y is None:
-            self.y = np.array(x)
+        self.x = np.array(x[0])
+        if len(x)==1:
+            self.y = np.array(x[0])
+        elif len(x)==2:
+            self.y = np.array(x[1])
         else:
-            self.y = np.array(y)
+            print("Format not supported. Exiting...")
+            sys.exit()
 
     def rbf_explicit(self, v1, v2):
         norm = 0
@@ -81,7 +91,7 @@ class LaplacePrecomputed():
             norm += abs((v1[i] - v2[i]))
         return math.exp(-(norm) * self.gamma)
   
-    def explicit_calc(self):
+    def compute(self):
         return np.array([[self.rbf_explicit(i, j) for j in self.y ] for i in self.x])
 
 
@@ -90,15 +100,18 @@ class PolyPrecomputed():
     Class that computes by hand a polynomial kernel
     Returns a numpy array that is the gaussian transform of the input matrices
     """
-    def __init__(self, x, y=None, gamma=1, deg=1, coef=0):
-        self.x = np.array(x)
+    def __init__(self, x, gamma=1, deg=1, coef=0):
         self.gamma = gamma
         self.deg = deg
         self.coef = coef
-        if y is None:
-            self.y = np.array(x)
+        self.x = np.array(x[0])
+        if len(x)==1:
+            self.y = np.array(x[0])
+        elif len(x)==2:
+            self.y = np.array(x[1])
         else:
-            self.y = np.array(y)
+            print("Format not supported. Exiting...")
+            sys.exit()
 
     def poly_explicit(self, v1, v2):
         prod = 0
@@ -107,7 +120,7 @@ class PolyPrecomputed():
         prod = self.gamma * prod + self.coef
         return math.pow(prod, self.deg)
   
-    def explicit_calc(self):
+    def compute(self):
         return np.array([[self.poly_explicit(i, j) for j in self.y ] for i in self.x])
 
     def poly_np(self, v1, v2):
@@ -124,14 +137,17 @@ class SigmoidPrecomputed():
     Class that computes by hand a sigmoid kernel
     Returns a numpy array
     """
-    def __init__(self, x, y=None, gamma=0.01, coef=0):
-        self.x = np.array(x)
+    def __init__(self, x, gamma=0.01, coef=0):
         self.gamma = gamma
         self.coef = coef
-        if y is None:
-            self.y = np.array(x)
+        self.x = np.array(x[0])
+        if len(x)==1:
+            self.y = np.array(x[0])
+        elif len(x)==2:
+            self.y = np.array(x[1])
         else:
-            self.y = np.array(y)
+            print("Format not supported. Exiting...")
+            sys.exit()
 
     def sigmoid_explicit(self, v1, v2):
         prod = 0
@@ -140,7 +156,7 @@ class SigmoidPrecomputed():
         prod = self.gamma * prod + self.coef
         return math.tanh(prod)
   
-    def explicit_calc(self):
+    def compute(self):
         return np.array([[self.sigmoid_explicit(i, j) for j in self.y ] for i in self.x])
 
 
@@ -153,11 +169,11 @@ class KernelSum():
     def __init__(self, kernels=[]):
         if len(kernels) == 0:
             print("No input kernels. Goodbye!")
-            return None
+            sys.exit()
         else:
             self.kernels = kernels
 
-    def linear_combination(self):
+    def compute(self):
         suma = 0
         for kernel in self.kernels:
             suma += kernel[0] * kernel[1]
@@ -173,13 +189,14 @@ class KernelProd():
     def __init__(self, kernels=[]):
         if len(kernels) <= 1:
             print("Not enough kernels. Goodbye!")
-            return None
+            sys.exit()
         else:
             self.kernels = kernels
 
-    def matrix_product(self):
+    def compute(self):
         """
         Computes the Hadamard product of a list of kernels
+        matrix product
         """
         prod1 = self.kernels[0][0] * self.kernels[0][1]
         prod2 = self.kernels[1][0] * self.kernels[1][1]
@@ -190,134 +207,61 @@ class KernelProd():
         return result
 
 
-def precompute_kernel(kernel_fcn, X_train, X_test=None):
+def compute_kernel(kernel_fcn, X_train, X_test=None, alphas=[1, 1]):
     """
-    returns kernel matrix
+    Compute the kernel matrix
     """
-    if kernel_fcn == "rbf":
-        if X_test is None:
-            matrix_kernel = RBFPrecomputed(X_train)
-        else:
-            matrix_kernel = RBFPrecomputed(X_test, X_train)
-        return matrix_kernel.explicit_calc()
-    elif kernel_fcn == "pol":
-        if X_test is None:
-            matrix_kernel = PolyPrecomputed(X_train)
-        else:
-            matrix_kernel = PolyPrecomputed(X_test, X_train)
-        return matrix_kernel.explicit_calc()
-    elif kernel_fcn == "lap":
-        if X_test is None:
-            matrix_kernel = LaplacePrecomputed(X_train)
-        else:
-            matrix_kernel = LaplacePrecomputed(X_test, X_train)
-        return matrix_kernel.explicit_calc()
-    elif kernel_fcn == "lin":
-        if X_test is None:
-            matrix_kernel = LinearPrecomputed(X_train)
-        else:
-            matrix_kernel = LinearPrecomputed(X_test, X_train)
-        return matrix_kernel.explicit_calc()
-    elif kernel_fcn == "sig":
-        if X_test is None:
-            matrix_kernel = SigmoidPrecomputed(X_train)
-        else:
-            matrix_kernel = SigmoidPrecomputed(X_test, X_train)
-        return matrix_kernel.explicit_calc()
-    elif kernel_fcn == "sum_rbf_sig":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = SigmoidPrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = SigmoidPrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_sum = KernelSum(kernels)
-        return kernel_sum.linear_combination()            
-    elif kernel_fcn == "sum_rbf_pol":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = PolyPrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = PolyPrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_sum = KernelSum(kernels)
-        return kernel_sum.linear_combination()
-    elif kernel_fcn == "sum_rbf_lin":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = LinearPrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = LinearPrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_sum = KernelSum(kernels)
-        return kernel_sum.linear_combination()
+    kernel_fcn = [*set(kernel_fcn.split("_"))]
+    kernel_fcn_temp = kernel_fcn.copy()
+
+    if X_test is None:
+        X = [X_train]
+    else:
+        X = [X_test, X_train]
+
+    matrices_kernels = []
+    while len(kernel_fcn_temp) != 0:
+        if "rbf" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("rbf")
+            matrices_kernels.append(RBFPrecomputed(X))
+
+        if "pol" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("pol")
+            matrices_kernels.append(PolyPrecomputed(X))
+
+        if "sig" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("sig")
+            matrices_kernels.append(SigmoidPrecomputed(X))
+
+        if "lap" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("lap")
+            matrices_kernels.append(LaplacePrecomputed(X))
+
+        if "lin" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("lin")
+            matrices_kernels.append(LinearPrecomputed(X))
+
+        if "sum" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("sum")
+            
+        if  "prd" in kernel_fcn_temp:
+            kernel_fcn_temp.remove("prd")
         
-    elif kernel_fcn == "sum_rbf_lap":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = LaplacePrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = LaplacePrecomputed(X_test, X_train).explicit_calc()
+    if len(matrices_kernels)==1:
+        matrix_kernel = matrices_kernels[0].compute()
+    elif len(matrices_kernels)==2:
         kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_sum = KernelSum(kernels)
-        return kernel_sum.linear_combination()
-    elif kernel_fcn == "prd_rbf_sig":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = SigmoidPrecomputed(X_train).explicit_calc()
+        kernels.append((1, matrices_kernels[0].compute()))
+        kernels.append((1, matrices_kernels[1].compute()))
+        if "sum" in kernel_fcn:
+            matrix_kernel = KernelSum(kernels).compute()
+        elif "prd" in kernel_fcn:
+            matrix_kernel = KernelProd(kernels).compute()
         else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = SigmoidPrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_prod = KernelProd(kernels)
-        return kernel_prod.matrix_product()            
-    elif kernel_fcn == "prd_rbf_pol":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = PolyPrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = PolyPrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_prod = KernelProd(kernels)
-        return kernel_prod.matrix_product()
-    elif kernel_fcn == "prd_rbf_lin":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = LinearPrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = LinearPrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_prod = KernelProd(kernels)
-        return kernel_prod.matrix_product()        
-    elif kernel_fcn == "prd_rbf_lap":
-        if X_test is None:
-            kernel1 = RBFPrecomputed(X_train).explicit_calc()
-            kernel2 = LaplacePrecomputed(X_train).explicit_calc()
-        else:
-            kernel1 = RBFPrecomputed(X_test, X_train).explicit_calc()
-            kernel2 = LaplacePrecomputed(X_test, X_train).explicit_calc()
-        kernels = []
-        kernels.append((1, kernel1))
-        kernels.append((1, kernel2))
-        kernel_prod = KernelProd(kernels)
-        return kernel_prod.matrix_product()
+            print("Kernel not supported. Bye!")
+            sys.exit()
+    else:
+        print("Kernel not supported. Bye!")
+        sys.exit()
+
+    return matrix_kernel
