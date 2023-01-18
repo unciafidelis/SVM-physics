@@ -24,13 +24,13 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_linear_precomputed(self):
         from common.svm_methods import LinearPrecomputed
-        test_linear = LinearPrecomputed(X_train)
-        matrix_test = LinearPrecomputed(X_test, X_train)
+        test_linear = LinearPrecomputed([X_train])
+        matrix_test = LinearPrecomputed([X_test, X_train])
         # precomputed kernel, explicit calculation
-        matrix_ep = test_linear.explicit_calc()
+        matrix_ep = test_linear.compute()
         model_ep = SVC(kernel="precomputed", C=100, gamma=0.01)
         model_ep.fit(matrix_ep, y_train)
-        matrix_test_ep = matrix_test.explicit_calc()
+        matrix_test_ep = matrix_test.compute()
         y_pred_ep = model_ep.predict(matrix_test_ep)
         acc_ep = accuracy_score(y_test, y_pred_ep)
         prc_ep = precision_score(y_test, y_pred_ep)
@@ -55,13 +55,13 @@ class TestPrecomputed(unittest.TestCase):
         
     def test_rbf_precomputed(self):
         from common.svm_methods import RBFPrecomputed
-        test_rbf = RBFPrecomputed(X_train)
-        matrix_test = RBFPrecomputed(X_test, X_train)
+        test_rbf = RBFPrecomputed([X_train])
+        matrix_test = RBFPrecomputed([X_test, X_train])
         # precomputed kernel, explicit calculation
-        matrix_ep = test_rbf.explicit_calc()
+        matrix_ep = test_rbf.compute()
         model_ep = SVC(kernel="precomputed")
         model_ep.fit(matrix_ep, y_train)
-        matrix_test_ep = matrix_test.explicit_calc()
+        matrix_test_ep = matrix_test.compute()
         y_pred_ep = model_ep.predict(matrix_test_ep)
         acc_ep = accuracy_score(y_test, y_pred_ep)
         prc_ep = precision_score(y_test, y_pred_ep)
@@ -86,13 +86,13 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_sigmoid_precomputed(self):
         from common.svm_methods import SigmoidPrecomputed
-        test_sig = SigmoidPrecomputed(X_train, gamma=0.1)
-        matrix_test = SigmoidPrecomputed(X_test, X_train, gamma=0.1)
+        test_sig = SigmoidPrecomputed([X_train], gamma=0.1)
+        matrix_test = SigmoidPrecomputed([X_test, X_train], gamma=0.1)
         # precomputed kernel, explicit calculation
-        matrix_ep = test_sig.explicit_calc()
+        matrix_ep = test_sig.compute()
         model_ep = SVC(kernel="precomputed")
         model_ep.fit(matrix_ep, y_train)
-        matrix_test_ep = matrix_test.explicit_calc()
+        matrix_test_ep = matrix_test.compute()
         y_pred_ep = model_ep.predict(matrix_test_ep)
         acc_ep = accuracy_score(y_test, y_pred_ep)
         prc_ep = precision_score(y_test, y_pred_ep)
@@ -107,13 +107,13 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_laplace_precomputed(self):
         from common.svm_methods import LaplacePrecomputed
-        test_lap = LaplacePrecomputed(X_train)
-        matrix_test = LaplacePrecomputed(X_test, X_train)
+        test_lap = LaplacePrecomputed([X_train])
+        matrix_test = LaplacePrecomputed([X_test, X_train])
         # precomputed kernel, explicit calculation
-        matrix_ep = test_lap.explicit_calc()
+        matrix_ep = test_lap.compute()
         model_ep = SVC(kernel="precomputed")
         model_ep.fit(matrix_ep, y_train)
-        matrix_test_ep = matrix_test.explicit_calc()
+        matrix_test_ep = matrix_test.compute()
         y_pred_ep = model_ep.predict(matrix_test_ep)
         acc_ep = accuracy_score(y_test, y_pred_ep)
         prc_ep = precision_score(y_test, y_pred_ep)
@@ -131,13 +131,13 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_poly_precomputed(self):
         from common.svm_methods import PolyPrecomputed
-        test_poly = PolyPrecomputed(X_train, gamma=0.5, deg=2, coef=1)
-        matrix_test = PolyPrecomputed(X_test, X_train, gamma=0.5, deg=2, coef=1)
+        test_poly = PolyPrecomputed([X_train], gamma=0.5, deg=2, coef=1)
+        matrix_test = PolyPrecomputed([X_test, X_train], gamma=0.5, deg=2, coef=1)
         # precomputed kernel, explicit calculation
-        matrix_ep = test_poly.explicit_calc()
+        matrix_ep = test_poly.compute()
         model_ep = SVC(kernel="precomputed")
         model_ep.fit(matrix_ep, y_train)
-        matrix_test_ep = matrix_test.explicit_calc()
+        matrix_test_ep = matrix_test.compute()
         y_pred_ep = model_ep.predict(matrix_test_ep)
         acc_ep = accuracy_score(y_test, y_pred_ep)
         prc_ep = precision_score(y_test, y_pred_ep)
@@ -162,10 +162,10 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_kernel_sum(self):
         from common.svm_methods import PolyPrecomputed
-        kernel_comp = PolyPrecomputed(X_train, gamma=1, deg=1, coef=0)
-        kernel_test_comp = PolyPrecomputed(X_test, X_train, gamma=1, deg=1, coef=0)
-        kernel_comp = kernel_comp.explicit_calc()
-        kernel_test_comp = kernel_test_comp.explicit_calc()
+        kernel_comp = PolyPrecomputed([X_train], gamma=1, deg=1, coef=0)
+        kernel_test_comp = PolyPrecomputed([X_test, X_train], gamma=1, deg=1, coef=0)
+        kernel_comp = kernel_comp.compute()
+        kernel_test_comp = kernel_test_comp.compute()
         kernels = []
         kernels.append((1, kernel_comp))
         kernels.append((1, kernel_comp))
@@ -174,9 +174,9 @@ class TestPrecomputed(unittest.TestCase):
         kernels_test_comp.append((1, kernel_test_comp))
         from common.svm_methods import KernelSum
         kernel_sum = KernelSum(kernels)
-        kernel_sum = kernel_sum.linear_combination()
+        kernel_sum = kernel_sum.compute()
         kernel_sum_test = KernelSum(kernels_test_comp)
-        kernel_sum_test = kernel_sum_test.linear_combination()
+        kernel_sum_test = kernel_sum_test.compute()
         model_sum = SVC(kernel="precomputed")
         model_sum.fit(kernel_sum, y_train)
         y_pred_sum = model_sum.predict(kernel_sum_test)
@@ -192,10 +192,10 @@ class TestPrecomputed(unittest.TestCase):
 
     def test_kernel_prod(self):
         from common.svm_methods import PolyPrecomputed
-        kernel_comp = PolyPrecomputed(X_train, gamma=1, deg=1, coef=0)
-        kernel_test_comp = PolyPrecomputed(X_test, X_train, gamma=1, deg=1, coef=0)
-        kernel_comp = kernel_comp.explicit_calc()
-        kernel_test_comp = kernel_test_comp.explicit_calc()
+        kernel_comp = PolyPrecomputed([X_train], gamma=1, deg=1, coef=0)
+        kernel_test_comp = PolyPrecomputed([X_test, X_train], gamma=1, deg=1, coef=0)
+        kernel_comp = kernel_comp.compute()
+        kernel_test_comp = kernel_test_comp.compute()
         ones_train = np.ones((len(X_train), len(X_train)))
         ones_test  = np.ones((len(X_test), len(X_train)))
         kernels = []
@@ -214,9 +214,9 @@ class TestPrecomputed(unittest.TestCase):
         kernels_test_comp.append((1, ones_test))
         from common.svm_methods import KernelProd
         kernel_multiplication = KernelProd(kernels)
-        kernel_multiplication = kernel_multiplication.matrix_product()
+        kernel_multiplication = kernel_multiplication.compute()
         kernel_multiplication_test = KernelProd(kernels_test_comp)
-        kernel_multiplication_test = kernel_multiplication_test.matrix_product()
+        kernel_multiplication_test = kernel_multiplication_test.compute()
         model_prod = SVC(kernel="precomputed")
         model_prod.fit(kernel_multiplication, y_train)
         y_predict_prod = model_prod.predict(kernel_multiplication_test)
